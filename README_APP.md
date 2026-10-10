@@ -214,3 +214,18 @@ exemplo, a=1, b=-6, c=13). Não há raízes reais nessa situação, portanto o m
 
 A janela principal, o editor de listas e o formulário de questões abrem
 maximizados, mantendo os controles de minimizar, restaurar e fechar.
+
+### Grupos de contextos: raízes e vértice
+
+Em **Expressão da função → Tipo de questão**, escolha **Sem contexto**,
+**Raízes** ou **Vértice**. A lista de cenários é filtrada por esse grupo.
+Em Vértice, escolha xv, yv ou ambos; em Raízes, a pergunta é própria do cenário:
+lançamento vertical, lucro nulo, temperatura zero, arco de entrada, encontro
+de ciclistas ou nível de reservatório. Há imagem opcional em quatro deles;
+lucro e temperatura não têm imagem. O painel de apoio mostra as condições
+e exemplos adequados para cada cenário, sem alterar seus coeficientes.
+
+A separação funciona também no editor de listas e é recuperada do cenário
+e da pergunta salvos no JSON. Questões antigas permanecem legíveis sem alterar
+seu enunciado; um contexto antigo de raízes aparece apenas quando já fazia
+parte do documento carregado, não entre as opções para novas questões.

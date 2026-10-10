@@ -114,28 +114,45 @@ class Aba:
                 for key,label in [('pedir_raizes','Raízes reais'),('pedir_vertice','Coordenadas do vértice')]:
                     reg[key]=tk.BooleanVar(value=True)
                     ttk.Checkbutton(pedidos,text=label,variable=reg[key]).pack(side='left',padx=8)
-                from contextos_quadraticas import CENARIOS, ALVOS, EIXOS, PROJETEIS, IMAGENS
+                from contextos_quadraticas import CENARIOS, ALVOS, EIXOS, PROJETEIS, IMAGENS, grupo, cenarios_grupo
                 contexto=ttk.Frame(card)
                 reg['cenario']=tk.StringVar(value='Sem contexto')
                 reg['alvo_contexto']=tk.StringVar(value='xv e yv')
                 reg['eixo_contexto']=tk.StringVar(value=EIXOS[0])
                 reg['incluir_imagem']=tk.BooleanVar(value=False)
-                ttk.Label(contexto,text='Contexto:').grid(row=0,column=0,sticky='w',pady=5)
+                reg['_grupo_contexto']=tk.StringVar(value='Sem contexto')
+                ttk.Label(contexto,text='Tipo de questão:').grid(row=0,column=0,sticky='w',pady=5)
+                tipo_contexto=ttk.Combobox(contexto,textvariable=reg['_grupo_contexto'],values=('Sem contexto','Raízes','Vértice'),state='readonly',width=20)
+                tipo_contexto.grid(row=0,column=1,sticky='w',padx=8)
+                ttk.Label(contexto,text='Contexto:').grid(row=1,column=0,sticky='w',pady=5)
                 cen=ttk.Combobox(contexto,textvariable=reg['cenario'],values=CENARIOS,state='readonly',width=35)
-                cen.grid(row=0,column=1,sticky='w',padx=8)
-                ttk.Label(contexto,text='Perguntar:').grid(row=1,column=0,sticky='w')
+                cen.grid(row=1,column=1,sticky='w',padx=8)
+                ttk.Label(contexto,text='Perguntar:').grid(row=2,column=0,sticky='w')
                 alvo=ttk.Combobox(contexto,textvariable=reg['alvo_contexto'],values=ALVOS,state='readonly',width=20)
-                alvo.grid(row=1,column=1,sticky='w',padx=8)
-                ttk.Label(contexto,text='x representa:').grid(row=2,column=0,sticky='w',pady=5)
+                alvo.grid(row=2,column=1,sticky='w',padx=8)
+                eixo_label=ttk.Label(contexto,text='x representa:')
+                eixo_label.grid(row=3,column=0,sticky='w',pady=5)
                 eixo=ttk.Combobox(contexto,textvariable=reg['eixo_contexto'],values=EIXOS,state='readonly',width=22)
-                eixo.grid(row=2,column=1,sticky='w',padx=8)
+                eixo.grid(row=3,column=1,sticky='w',padx=8)
                 img=ttk.Checkbutton(contexto,text='Incluir imagem (ilustrativa, sem escala)',variable=reg['incluir_imagem'])
-                img.grid(row=3,column=0,columnspan=2,sticky='w',pady=5)
-                ttk.Label(contexto,text='Expressões: até 4 questões por página, 2 por linha. As demais seguem em novas folhas; imagens ajustadas automaticamente.',wraplength=600).grid(row=4,column=0,columnspan=2,sticky='w')
-                def atualizar_apresentacao(event=None,reg=reg,options=options,pedidos=pedidos,contexto=contexto,alvo=alvo,eixo=eixo,img=img):
+                img.grid(row=4,column=0,columnspan=2,sticky='w',pady=5)
+                ttk.Label(contexto,text='Expressões: até 4 questões por página, 2 por linha. As demais seguem em novas folhas; imagens ajustadas automaticamente.',wraplength=600).grid(row=5,column=0,columnspan=2,sticky='w')
+                def atualizar_apresentacao(event=None,reg=reg,options=options,pedidos=pedidos,contexto=contexto,alvo=alvo,eixo=eixo,img=img,cen=cen,eixo_label=eixo_label):
+                    tipo=grupo(reg['cenario'].get(),reg['alvo_contexto'].get())
+                    reg['_grupo_contexto'].set(tipo)
+                    cenarios=cenarios_grupo(tipo)
+                    # Preserva enunciados de JSONs antigos, sem oferecê-los em novas questões.
+                    if reg['cenario'].get() not in cenarios: cenarios=(*cenarios,reg['cenario'].get())
+                    cen.configure(values=cenarios,state='disabled' if tipo=='Sem contexto' else 'readonly')
+                    alvos=('Raízes',) if tipo=='Raízes' else ('xv','yv','xv e yv')
+                    alvo.configure(values=alvos)
                     contextual=reg['cenario'].get()!='Sem contexto'
                     alvo.configure(state='readonly' if contextual else 'disabled')
                     eixo.configure(state='readonly' if reg['cenario'].get() in PROJETEIS else 'disabled')
+                    if reg['cenario'].get() in PROJETEIS:
+                        eixo.grid(); eixo_label.grid()
+                    else:
+                        eixo.grid_remove(); eixo_label.grid_remove()
                     img.configure(state='normal' if reg['cenario'].get() in IMAGENS else 'disabled')
                     if reg['apresentacao'].get()=='Expressão da função':
                         options.pack_forget(); contexto.pack(fill='x',pady=(10,0))
@@ -144,6 +161,13 @@ class Aba:
                     else:
                         contexto.pack_forget(); pedidos.pack_forget(); options.pack(fill='x',pady=(10,0))
                 reg['_atualizar_apresentacao']=atualizar_apresentacao
+                def trocar_grupo(event=None,reg=reg,atualizar=atualizar_apresentacao):
+                    tipo=reg['_grupo_contexto'].get()
+                    reg['cenario'].set(cenarios_grupo(tipo)[0])
+                    reg['alvo_contexto'].set('Raízes' if tipo=='Raízes' else 'xv e yv')
+                    reg['incluir_imagem'].set(False)
+                    atualizar()
+                tipo_contexto.bind('<<ComboboxSelected>>',trocar_grupo)
                 select.bind('<<ComboboxSelected>>',atualizar_apresentacao)
                 cen.bind('<<ComboboxSelected>>',atualizar_apresentacao)
                 self.apoio_quadratica(quadro,reg)

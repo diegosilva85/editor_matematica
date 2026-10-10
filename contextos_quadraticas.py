@@ -1,5 +1,6 @@
 """Contextos de expressões quadráticas e suas ilustrações opcionais."""
 from pathlib import Path
+import contextos_raizes
 
 CENARIOS = ('Sem contexto', 'Chute do goleiro', 'Saque de vôlei', 'Jato de água',
             'Lucro por quantidade vendida', 'Lucro ao longo dos dias',
@@ -10,9 +11,20 @@ EIXOS = ('Distância horizontal', 'Tempo')
 PROJETEIS = CENARIOS[1:4]
 IMAGENS = {'Chute do goleiro': 'chute_goleiro-v2.png', 'Saque de vôlei': 'saque_volei-v2.png',
            'Jato de água': 'jato_agua.png', 'Cabo suspenso': 'cabo_suspenso.png'}
+IMAGENS.update(contextos_raizes.IMAGENS)
+
+
+def grupo(cenario,alvo):
+    if cenario=='Sem contexto': return 'Sem contexto'
+    return 'Raízes' if cenario in contextos_raizes.CENARIOS or alvo=='Raízes' else 'Vértice'
+
+
+def cenarios_grupo(nome):
+    return contextos_raizes.CENARIOS if nome=='Raízes' else CENARIOS[1:] if nome=='Vértice' else ('Sem contexto',)
 
 
 def orientacao(cenario):
+    if cenario in contextos_raizes.CENARIOS: return contextos_raizes.orientacao(cenario)
     if cenario=='Sem contexto':
         return 'Use a diferente de zero. Você pode informar coeficientes ou uma raiz dupla / duas raízes reais.'
     if cenario=='Cabo suspenso':
@@ -21,13 +33,13 @@ def orientacao(cenario):
                 'Com duas raízes reais o ponto mais baixo fica no solo ou abaixo dele; por isso esse modo não serve a este cenário.')
     if cenario=='Temperatura de uma câmara fria':
         return ('Use a > 0 e xv ≥ 0 para um mínimo após o início. yv pode ser negativo. '
-                'Exemplo: a = 1, b = -6, c = 5 (raízes 1 e 5). Para perguntar raízes, deve existir uma raiz real não negativa.')
+                'Exemplo: a = 1, b = -6, c = 5 (raízes 1 e 5).')
     base=('Use a < 0, xv ≥ 0 e yv > 0 para um máximo no domínio do contexto. '
           'Exemplo: a = -1, b = 6, c = 0; ou a = -1 com raízes 0 e 6. '
           'No modo por raízes, use duas distintas cuja média seja não negativa. ')
     if cenario in PROJETEIS:
         return base+'c é a altura inicial: use c ≥ 0. Exemplo de lançamento acima do solo: a = -1, b = 4, c = 5 (raízes -1 e 5).'
-    return base+'Se pedir raízes, deve haver ao menos uma raiz real não negativa. x representa '+{
+    return base+'x representa '+{
         'Lucro por quantidade vendida':'milhares de unidades vendidas.',
         'Lucro ao longo dos dias':'dias desde o início da campanha.',
         'Terreno com cerca':'uma dimensão em metros; considere somente área positiva.',
@@ -41,11 +53,14 @@ def imagem(q):
 
 
 def validar(q, xv, yv, roots):
-    if q.cenario not in CENARIOS or q.alvo_contexto not in ALVOS or q.eixo_contexto not in EIXOS:
+    if q.cenario not in CENARIOS+contextos_raizes.CENARIOS or q.alvo_contexto not in ALVOS or q.eixo_contexto not in EIXOS:
         raise ValueError('Contexto, pergunta ou variável inválida.')
     if type(q.incluir_imagem) is not bool:
         raise ValueError('A opção de incluir imagem deve ser verdadeira ou falsa.')
     if q.apresentacao != 'Expressão da função' or q.cenario == 'Sem contexto':
+        return
+    if q.cenario in contextos_raizes.CENARIOS:
+        contextos_raizes.validar(q,roots)
         return
     minimo = q.cenario in ('Cabo suspenso', 'Temperatura de uma câmara fria')
     if q.cenario=='Cabo suspenso' and q.modo=='Raízes e a':
@@ -61,6 +76,7 @@ def validar(q, xv, yv, roots):
 
 
 def enunciado(q):
+    if q.cenario in contextos_raizes.CENARIOS: return contextos_raizes.enunciado(q)
     c=q.cenario
     if c in PROJETEIS:
         intro={'Chute do goleiro': 'Durante uma partida de futebol, um goleiro chuta a bola, que descreve uma trajetória curva até voltar ao gramado.',
