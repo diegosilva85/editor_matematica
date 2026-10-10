@@ -14,6 +14,8 @@ def calcular(q):
         else: dica+=' Para descobrir a posição, o número deve pertencer à PA. Para descobrir a razão, informe duas posições distintas.'
     except ValueError as exc:
         dica=str(exc)
+    if q.apresentacao!='Contextual':
+        dica='Use posições inteiras positivas. aₙ = a₁ + (n−1)r; Sₙ = n(a₁+aₙ)/2. Forneça dados suficientes e não informe a incógnita.'
     try:
         resposta=q.resolver()
         linhas=[f'{ALVOS[q.tipo][q.incognita]} = {formatar(resposta)}']
@@ -32,8 +34,8 @@ def calcular(q):
                        f'n = {formatar(n)}; r = {formatar(r)}',f'Sₙ = {formatar(n*(primeiro+ultimo)/2)}']
         resultado='\n'.join(linhas)
         try:
-            q.validar(); aviso='Valores compatíveis com o contexto.'
-        except ValueError as exc: aviso='Ajuste para o contexto: '+str(exc)
+            q.validar(); aviso='Valores válidos.' if q.apresentacao!='Contextual' else 'Valores compatíveis com o contexto.'
+        except ValueError as exc: aviso=('Ajuste para o contexto: ' if q.apresentacao=='Contextual' else 'Confira os dados: ')+str(exc)
         return resultado,aviso,dica
     except (ValueError,KeyError,ZeroDivisionError) as exc:
         return 'Preencha os dados para calcular.',str(exc),dica

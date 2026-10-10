@@ -2,6 +2,28 @@
 
 ## Editor de provas
 
+### Apoio ao professor
+
+Os formulários mostram resultados de conferência em tempo real, apenas no
+editor, também ao acrescentar questões às listas e provas. O apoio não altera
+os dados nem é incluído no PDF ou nas alternativas.
+
+- Primeiro grau: expressão, raiz, intercepto, crescimento e pontos escolhidos.
+- Exponenciais: valores nos pontos, f(0), raiz quando existe, imagem, assíntota
+  e crescimento, considerando também multiplicadores negativos.
+- Trigonometria: três lados, medida solicitada, razões trigonométricas, área
+  e perímetro. Em Pitágoras, calcula o lado faltante e os ângulos agudos.
+  Nos contextos, distingue o cateto vertical da altura total com olhos,
+  mão ou antena. Resultados são aproximações de até oito algarismos significativos.
+- Parábolas: apoio disponível nos gráficos e nas expressões, com raízes,
+  vértice, coeficientes e sinais de a e delta.
+- PA: apoio disponível tanto nas questões contextualizadas quanto nas literais.
+
+Estatística, geometria plana e geometria espacial mantêm seus apoios existentes.
+Entradas incompletas ou inválidas produzem avisos enquanto você edita.
+
+### Criar e salvar
+
 Na tela inicial, **Criar nova prova** abre o editor em tela maximizada, com
 os mesmos conteúdos e formulários de **Criar Lista**. Acrescente, edite,
 remova ou reordene as questões pelas setas. O enunciado pode acompanhar o

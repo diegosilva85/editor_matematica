@@ -18,6 +18,9 @@ def calcular(campos):
                 'Raiz dupla: '+fmt(roots[0]) if len(roots)==1 else
                 'x₁ = '+fmt(roots[0])+'\nx₂ = '+fmt(roots[1]))
         resultado=f'{raizes}\n\nxv = {fmt(xv)}\nyv = {fmt(yv)}\nV = ({fmt(xv)}; {fmt(yv)})'
+        resultado+=f'\n\na = {fmt(q.a)}; b = {fmt(q.b)}; c = {fmt(q.c)}'
+        resultado+='\nSinal de a: '+('positivo (mínimo)' if q.a>0 else 'negativo (máximo)')
+        resultado+='\nSinal de Δ: '+('negativo' if not roots else 'zero' if len(roots)==1 else 'positivo')
         q.apresentacao='Expressão da função'
         q.cenario=campos.get('cenario','Sem contexto')
         q.alvo_contexto=campos.get('alvo_contexto','xv e yv')

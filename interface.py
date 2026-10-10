@@ -188,6 +188,9 @@ class Aba:
                 reg['_quantidade_pontos']=n
                 reg['_atualizar_pontos']=atualizar
                 spin.configure(command=atualizar); atualizar()
+                if type(self) is Aba:
+                    from interface_apoio import instalar
+                    instalar(card,reg,'reta',self)
 
     def apoio_quadratica(self,quadro,reg):
         from apoio_quadraticas import calcular
@@ -208,8 +211,6 @@ class Aba:
         def atualizar():
             pending[0]=None
             if not panel.winfo_exists(): return
-            if reg['apresentacao'].get()!='Expressão da função':
-                panel.pack_forget(); return
             if getattr(self,'apoio_embaixo',False): panel.pack(side='bottom',fill='x',pady=(12,0))
             else: panel.pack(side='right',fill='y',padx=(15,0),anchor='n')
             campos={k:v.get() for k,v in reg.items() if not k.startswith('_')}
@@ -351,6 +352,8 @@ class AbaTriangulos(Aba):
             for key in ('valor','valor2','lado_x'): reg[key].trace_add('write',redesenhar)
             redesenhar()
             self.editor_contextual(outer,card,reg)
+            from interface_apoio import instalar
+            instalar(outer,reg,'triangulo',self)
 
     def editor_contextual(self,outer,simples,r):
         from contextos import CENARIOS, EXTRAS, opcoes, enunciado, preview
@@ -581,6 +584,8 @@ class AbaExponenciais(Aba):
             ttk.Label(row,text='Formato:').pack(side='left')
             ttk.Combobox(row,values=TIPOS_EXP,textvariable=reg['tipo'],state='readonly',width=15).pack(side='left',padx=8)
             ttk.Label(row,text='a e b: 2, 1/2, √2, -√3/3 (a > 0 e a ≠ 1)').pack(side='left')
+            from interface_apoio import instalar
+            instalar(card,reg,'exponencial',self)
 
     def pagina(self):
         items=[]
@@ -660,13 +665,11 @@ class AbaProgressao(Aba):
                               {k:v.get() for k,v in r['valores'].items()},r['indicados'].get(),
                               **{k:r[k].get() for k in ('apresentacao','cenario','periodo','unidade','atividade')})
         def previa(*args):
-            if r['apresentacao'].get()=='Contextual':
-                if getattr(self,'apoio_embaixo',False): apoio.pack(side='bottom',fill='x',pady=(12,0))
-                else: apoio.pack(side='right',fill='y',padx=(15,0),anchor='n')
-                from apoio_pa import calcular
-                texto,alerta,orientacao=calcular(modelo())
-                resultado.set(texto); aviso.set(alerta); dica.set(orientacao)
-            else: apoio.pack_forget()
+            if getattr(self,'apoio_embaixo',False): apoio.pack(side='bottom',fill='x',pady=(12,0))
+            else: apoio.pack(side='right',fill='y',padx=(15,0),anchor='n')
+            from apoio_pa import calcular
+            texto,alerta,orientacao=calcular(modelo())
+            resultado.set(texto); aviso.set(alerta); dica.set(orientacao)
             try:
                 import re
                 text=modelo().enunciado()
