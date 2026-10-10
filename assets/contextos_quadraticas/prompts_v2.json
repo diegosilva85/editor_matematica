@@ -1,0 +1,15 @@
+{
+  "method": "Built-in image_gen",
+  "images": [
+    {
+      "source": "saque_volei.png",
+      "output": "saque_volei-v2.png",
+      "prompt": "Edit the provided illustration, preserving its detailed black-and-white textbook pen-and-ink style, fine hatching, pure white background and landscape format. Change the volleyball action: show exactly ONE volleyball already on the OTHER side of the net, in the receiving court, high in the air. Adjust the perspective/composition as necessary so the serving player on the left and the ball beyond the net on the right are unmistakably on opposite sides of the net. Add a single thin clearly visible dashed parabolic flight trajectory beginning at the player's raised serving hand, rising to an apex ABOVE the top of the net and descending to terminate exactly at the airborne ball on the opposite side. Physically coherent side-view trajectory. Remove the old ball near the hand. Keep realistic full-body adult athlete, detailed net mesh, court lines, plain clothes, spare surroundings. No text, numbers, axes, measurement labels or formulas; no other balls. Keep scene clean and readable for a math worksheet."
+    },
+    {
+      "source": "chute_goleiro.png",
+      "output": "chute_goleiro-v2.png",
+      "prompt": "Edit the provided illustration in the same detailed black-and-white textbook pen-and-ink style, fine sparse hatching and pure white background. Reframe to a MUCH MORE DISTANT wide view: the full-body goalkeeper and goal become smaller on the lower left, with a broad visible soccer pitch and ample sky. Show goalkeeper following through on a ground goal kick. Exactly ONE soccer ball now much HIGHER in the sky, to the right, above the player's head and goal. Add a single thin clearly visible dashed inverted-U parabolic trajectory starting at the low kick point just ahead of the extended kicking foot, rising high into the sky to an apex and ending at the airborne ball slightly after the apex on the right. Remove the original low ball. The high arc and high ball should be the primary educational focus, while retaining realistic anatomy, detailed goal mesh, gloves, cleats, plain jersey and subtle pitch markings. Landscape composition. No text, numbers, axes, labels, formulas, logos or extra balls."
+    }
+  ]
+}
