@@ -50,7 +50,7 @@ def validar_documento(dados):
                         if not isinstance(v,list) or len(v)>8 or not all(numero(x) for x in v): raise ValueError('Lista de pontos inválida.')
                     elif k=='valores':
                         if not isinstance(v,dict) or not all(isinstance(key,str) and isinstance(val,str) and len(val)<=40 for key,val in v.items()): raise ValueError('Medidas inválidas.')
-                    elif k in ('raizes','intercepto','marcar_xv','marcar_yv','pedir_raizes','pedir_vertice'):
+                    elif k in ('raizes','intercepto','marcar_xv','marcar_yv','pedir_raizes','pedir_vertice','incluir_imagem'):
                         if type(v) is not bool: raise ValueError('Opção de marcação inválida.')
                     elif k in ('a','b','c','angulo') and grau!=5:
                         if not numero(v): raise ValueError('Coeficiente ou ângulo inválido.')

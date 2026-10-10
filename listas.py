@@ -96,6 +96,9 @@ def planejar(lista):
             grau,item=lista.itens[index+offset]
             _,text_height=paragrafo(grau,item,index+offset+1,width)
             textual=grau==6 or (grau==2 and item.apresentacao=='Expressão da função')
+            if grau==2 and textual:
+                from contextos_quadraticas import imagem
+                textual=not bool(imagem(item))
             graphic=0 if textual else (145 if lista.colunas==3 else 185 if lista.colunas==2 else 235)
             height=max(100,text_height+graphic+30)
             row.append((index+offset,width,height,text_height,graphic))
@@ -130,6 +133,10 @@ class CanvasQuestao:
 
 
 def desenhar_item(pdf,grau,item,rect):
+    if grau==2 and item.apresentacao=='Expressão da função':
+        from contextos_quadraticas import desenhar_imagem
+        desenhar_imagem(pdf,item,rect)
+        return
     proxy=CanvasQuestao(pdf)
     if grau==1:
         from app_graficos import gerar_pdf

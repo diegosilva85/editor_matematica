@@ -176,3 +176,25 @@ python -m pip install -r requirements.txt
 ```
 
 As prévias usam `pypdfium2` (não exigem Poppler instalado no computador).
+
+### Contextos de funções quadráticas
+
+Em **2º grau → Expressão da função**, escolha um contexto ou mantenha
+**Sem contexto** para a questão literal. Os nove cenários incluem chute do
+goleiro, saque de vôlei, jato de água, lucro por quantidade vendida, lucro ao
+longo dos dias, terreno com cerca, receita de ingressos, temperatura de uma
+câmara fria e cabo suspenso.
+
+Escolha a pergunta: **Raízes**, **xv**, **yv** ou **xv e yv**. Nos lançamentos,
+é possível definir x como distância horizontal ou tempo. Os coeficientes
+continuam sendo informados diretamente ou por raízes e a; o app verifica
+a concavidade e a coerência básica dos valores com o contexto escolhido.
+
+**Incluir imagem** é opcional e fica habilitado nos quatro cenários com arte:
+goleiro, vôlei, jato de água e cabo. As ilustrações não estão em escala e não
+são recalculadas a partir dos coeficientes. Vôlei e goleiro usam as versões
+revisadas com trajetória. Todas as escolhas ficam no JSON e também funcionam
+no editor de listas e em sua prévia. Na aba tradicional, prefira até quatro
+questões por página quando houver imagens; se o conteúdo não couber, o app
+pede menos questões ou uma coluna, sem cortar o texto. No editor de listas,
+a paginação se ajusta automaticamente.

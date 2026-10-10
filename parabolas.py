@@ -28,6 +28,10 @@ class Parabola:
     a_texto: str = ''
     b_texto: str = ''
     c_texto: str = ''
+    cenario: str = 'Sem contexto'
+    alvo_contexto: str = 'xv e yv'
+    eixo_contexto: str = 'Distância horizontal'
+    incluir_imagem: bool = False
 
     def dados(self):
         from numeros_exatos import ler
@@ -39,7 +43,7 @@ class Parabola:
             raise ValueError('Escolha gráfico ou expressão da função.')
         if type(self.pedir_raizes) is not bool or type(self.pedir_vertice) is not bool:
             raise ValueError('Selecione as informações a calcular.')
-        if self.apresentacao=='Expressão da função' and not (self.pedir_raizes or self.pedir_vertice):
+        if self.apresentacao=='Expressão da função' and self.cenario=='Sem contexto' and not (self.pedir_raizes or self.pedir_vertice):
             raise ValueError('Marque raízes, coordenadas do vértice ou ambas.')
         if self.modo not in ('Coeficientes','Raízes e a'):
             raise ValueError('Escolha o modo de entrada da parábola.')
@@ -57,7 +61,10 @@ class Parabola:
             yv=self.a*(xv-r1)*(xv-r2)
             if not all(math.isfinite(v) for v in (xv,yv)):
                 raise ValueError('Valores muito grandes para desenhar a parábola.')
-            return xv,yv,sorted(set((r1,r2)))
+            roots=sorted(set((r1,r2)))
+            from contextos_quadraticas import validar
+            validar(self,xv,yv,roots)
+            return xv,yv,roots
         xv = -self.b/(2*self.a)
         yv = (self.a*xv+self.b)*xv+self.c
         delta = self.b*self.b-4*self.a*self.c
@@ -70,6 +77,8 @@ class Parabola:
         else:
             q = -.5*(self.b+math.copysign(math.sqrt(delta),self.b))
             roots = sorted([q/self.a,self.c/q])
+        from contextos_quadraticas import validar
+        validar(self,xv,yv,roots)
         return xv,yv,roots
 
     def expressao(self):
@@ -111,6 +120,9 @@ class Parabola:
         return 'f(x) = '+''.join(parts)
 
     def enunciado(self):
+        if self.cenario != 'Sem contexto':
+            from contextos_quadraticas import enunciado
+            return enunciado(self)
         expression=self.expressao()
         pedido=('as raízes reais e as coordenadas do vértice' if self.pedir_raizes and self.pedir_vertice
                 else 'as raízes reais' if self.pedir_raizes else 'as coordenadas do vértice')
@@ -126,7 +138,8 @@ def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None):
     linhas=math.ceil(len(funcoes)/colunas)
     gap=min(12,40/linhas)
     cw=(W-60-(colunas-1)*gap)/colunas
-    ch=min(245,(H-110-(linhas-1)*gap)/linhas)
+    contextual=any(f.apresentacao=='Expressão da função' and f.cenario!='Sem contexto' for f in funcoes)
+    ch=min(380 if contextual else 245,(H-110-(linhas-1)*gap)/linhas)
     if quadro: cw,ch=quadro[2:4]
     pdf.setFillColor(HexColor('#172b4d'))
     size=16
@@ -151,8 +164,11 @@ def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None):
             pdf.roundRect(left,bottom,cw,ch,6)
             p=Paragraph(f'<b>({chr(97+i)})</b> '+f.enunciado(),ParagraphStyle('expressao',fontName='Helvetica',fontSize=10,leading=14,alignment=TA_JUSTIFY))
             _,height=p.wrap(cw-22,ch-24)
-            if height>ch-24: raise ValueError('O enunciado não cabe. Use menos questões ou uma coluna.')
+            from contextos_quadraticas import imagem, desenhar_imagem
+            image_height=min(130,(cw-22)*2/3) if imagem(f) else 0
+            if height+image_height>ch-24: raise ValueError('O enunciado e a imagem não cabem. Use menos questões ou uma coluna.')
             p.drawOn(pdf,left+11,bottom+ch-12-height)
+            if image_height: desenhar_imagem(pdf,f,(left+11,bottom+ch-18-height-image_height,cw-22,image_height))
             continue
         # O enquadramento independe das opções de marcação.
         span=max([1,abs(xv),*[abs(r-xv) for r in roots]])

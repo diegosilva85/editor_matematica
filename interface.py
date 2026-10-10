@@ -104,13 +104,38 @@ class Aba:
                 for key,label in [('pedir_raizes','Raízes reais'),('pedir_vertice','Coordenadas do vértice')]:
                     reg[key]=tk.BooleanVar(value=True)
                     ttk.Checkbutton(pedidos,text=label,variable=reg[key]).pack(side='left',padx=8)
-                def atualizar_apresentacao(event=None,reg=reg,options=options,pedidos=pedidos):
+                from contextos_quadraticas import CENARIOS, ALVOS, EIXOS, PROJETEIS, IMAGENS
+                contexto=ttk.Frame(card)
+                reg['cenario']=tk.StringVar(value='Sem contexto')
+                reg['alvo_contexto']=tk.StringVar(value='xv e yv')
+                reg['eixo_contexto']=tk.StringVar(value=EIXOS[0])
+                reg['incluir_imagem']=tk.BooleanVar(value=False)
+                ttk.Label(contexto,text='Contexto:').grid(row=0,column=0,sticky='w',pady=5)
+                cen=ttk.Combobox(contexto,textvariable=reg['cenario'],values=CENARIOS,state='readonly',width=35)
+                cen.grid(row=0,column=1,sticky='w',padx=8)
+                ttk.Label(contexto,text='Perguntar:').grid(row=1,column=0,sticky='w')
+                alvo=ttk.Combobox(contexto,textvariable=reg['alvo_contexto'],values=ALVOS,state='readonly',width=20)
+                alvo.grid(row=1,column=1,sticky='w',padx=8)
+                ttk.Label(contexto,text='x representa:').grid(row=2,column=0,sticky='w',pady=5)
+                eixo=ttk.Combobox(contexto,textvariable=reg['eixo_contexto'],values=EIXOS,state='readonly',width=22)
+                eixo.grid(row=2,column=1,sticky='w',padx=8)
+                img=ttk.Checkbutton(contexto,text='Incluir imagem (ilustrativa, sem escala)',variable=reg['incluir_imagem'])
+                img.grid(row=3,column=0,columnspan=2,sticky='w',pady=5)
+                ttk.Label(contexto,text='Use coeficientes coerentes com o contexto. Com imagens, prefira até 4 questões por página.',wraplength=600).grid(row=4,column=0,columnspan=2,sticky='w')
+                def atualizar_apresentacao(event=None,reg=reg,options=options,pedidos=pedidos,contexto=contexto,alvo=alvo,eixo=eixo,img=img):
+                    contextual=reg['cenario'].get()!='Sem contexto'
+                    alvo.configure(state='readonly' if contextual else 'disabled')
+                    eixo.configure(state='readonly' if reg['cenario'].get() in PROJETEIS else 'disabled')
+                    img.configure(state='normal' if reg['cenario'].get() in IMAGENS else 'disabled')
                     if reg['apresentacao'].get()=='Expressão da função':
-                        options.pack_forget(); pedidos.pack(fill='x',pady=(10,0))
+                        options.pack_forget(); contexto.pack(fill='x',pady=(10,0))
+                        if contextual: pedidos.pack_forget()
+                        else: pedidos.pack(fill='x',pady=(10,0))
                     else:
-                        pedidos.pack_forget(); options.pack(fill='x',pady=(10,0))
+                        contexto.pack_forget(); pedidos.pack_forget(); options.pack(fill='x',pady=(10,0))
                 reg['_atualizar_apresentacao']=atualizar_apresentacao
                 select.bind('<<ComboboxSelected>>',atualizar_apresentacao)
+                cen.bind('<<ComboboxSelected>>',atualizar_apresentacao)
             else:
                 n=tk.IntVar(value=3)
                 ttk.Label(row,text='Pontos:').pack(side='left')
@@ -165,7 +190,7 @@ class Aba:
                     c=0 if r['modo'].get()=='Raízes e a' else parse(r['c'].get())
                     f=Parabola(a,b,c,*[r[k].get() for k in ('raizes','intercepto','marcar_xv','marcar_yv')],
                                **{k+'_texto':r[k].get() for k in ('a','b','c')},
-                               **{k:r[k].get() for k in ('modo','quantidade_raizes','raiz1','raiz2','apresentacao','pedir_raizes','pedir_vertice')}); f.dados()
+                               **{k:r[k].get() for k in ('modo','quantidade_raizes','raiz1','raiz2','apresentacao','pedir_raizes','pedir_vertice','cenario','alvo_contexto','eixo_contexto','incluir_imagem')}); f.dados()
                 funcoes.append(f)
             except ValueError as e:
                 raise ValueError(f'Aba {self.grau}º grau, gráfico {i+1}: {e}')
