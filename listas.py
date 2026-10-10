@@ -62,6 +62,7 @@ def carregar_lista(path):
 
 
 def texto_questao(grau,item):
+    if grau==2 and item.apresentacao=='Expressão da função': return item.enunciado()
     if grau==6: return item.enunciado()
     if grau==3 and item.apresentacao=='Contextual':
         from contextos import enunciado
@@ -94,7 +95,8 @@ def planejar(lista):
         for offset in range(amount):
             grau,item=lista.itens[index+offset]
             _,text_height=paragrafo(grau,item,index+offset+1,width)
-            graphic=0 if grau==6 else (145 if lista.colunas==3 else 185 if lista.colunas==2 else 235)
+            textual=grau==6 or (grau==2 and item.apresentacao=='Expressão da função')
+            graphic=0 if textual else (145 if lista.colunas==3 else 185 if lista.colunas==2 else 235)
             height=max(100,text_height+graphic+30)
             row.append((index+offset,width,height,text_height,graphic))
         height=max(x[2] for x in row)

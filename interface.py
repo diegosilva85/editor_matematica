@@ -93,6 +93,23 @@ class Aba:
                 for key,label in [('raizes','Raízes'),('intercepto','c (eixo y)'),('marcar_xv','xv (eixo x)'),('marcar_yv','yv (eixo y)')]:
                     reg[key]=tk.BooleanVar(value=True)
                     ttk.Checkbutton(options,text=label,variable=reg[key]).pack(side='left',padx=(0,14))
+                presentation=ttk.Frame(card); presentation.pack(fill='x',before=modo_row,pady=(0,8))
+                reg['apresentacao']=tk.StringVar(value='Gráfico')
+                ttk.Label(presentation,text='Apresentação:').pack(side='left')
+                select=ttk.Combobox(presentation,textvariable=reg['apresentacao'],values=('Gráfico','Expressão da função'),state='readonly',width=25)
+                select.pack(side='left',padx=8)
+                pedidos=ttk.Frame(card)
+                ttk.Label(pedidos,text='Pedir para calcular:').pack(side='left',padx=(0,10))
+                for key,label in [('pedir_raizes','Raízes reais'),('pedir_vertice','Coordenadas do vértice')]:
+                    reg[key]=tk.BooleanVar(value=True)
+                    ttk.Checkbutton(pedidos,text=label,variable=reg[key]).pack(side='left',padx=8)
+                def atualizar_apresentacao(event=None,reg=reg,options=options,pedidos=pedidos):
+                    if reg['apresentacao'].get()=='Expressão da função':
+                        options.pack_forget(); pedidos.pack(fill='x',pady=(10,0))
+                    else:
+                        pedidos.pack_forget(); options.pack(fill='x',pady=(10,0))
+                reg['_atualizar_apresentacao']=atualizar_apresentacao
+                select.bind('<<ComboboxSelected>>',atualizar_apresentacao)
             else:
                 n=tk.IntVar(value=3)
                 ttk.Label(row,text='Pontos:').pack(side='left')
@@ -129,6 +146,7 @@ class Aba:
             if '_atualizar_lado' in reg: reg['_atualizar_lado']()
             if '_atualizar_modo' in reg: reg['_atualizar_modo']()
             if '_atualizar_contexto' in reg: reg['_atualizar_contexto']()
+            if '_atualizar_apresentacao' in reg: reg['_atualizar_apresentacao']()
 
     def pagina(self):
         funcoes=[]
@@ -141,7 +159,7 @@ class Aba:
                 else:
                     c=0 if r['modo'].get()=='Raízes e a' else numero(r['c'].get())
                     f=Parabola(a,b,c,*[r[k].get() for k in ('raizes','intercepto','marcar_xv','marcar_yv')],
-                               **{k:r[k].get() for k in ('modo','quantidade_raizes','raiz1','raiz2')}); f.dados()
+                               **{k:r[k].get() for k in ('modo','quantidade_raizes','raiz1','raiz2','apresentacao','pedir_raizes','pedir_vertice')}); f.dados()
                 funcoes.append(f)
             except ValueError as e:
                 raise ValueError(f'Aba {self.grau}º grau, gráfico {i+1}: {e}')

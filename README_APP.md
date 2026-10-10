@@ -140,6 +140,13 @@ fornecida no enunciado ou escolhida como incógnita.
 
 ## Editor de listas mistas
 
+Na aba **2º grau**, a apresentação **Expressão da função** cria questões sem
+gráfico, exibindo `f(x) = ax² + bx + c`. Marque **Raízes reais** e/ou
+**Coordenadas do vértice** para definir o que será pedido. A entrada continua
+aceitando coeficientes ou raízes e coeficiente a (uma raiz significa raiz dupla).
+O modo também está disponível no editor de listas e é preservado no JSON.
+Documentos antigos continuam abrindo no modo gráfico.
+
 Clique em **Criar Lista**, fora das abas, para abrir **Nova Lista de Exercícios**.
 As abas tradicionais continuam funcionando de forma independente.
 

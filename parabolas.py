@@ -21,8 +21,17 @@ class Parabola:
     quantidade_raizes: str = '2'
     raiz1: str = '0'
     raiz2: str = '1'
+    apresentacao: str = 'Gráfico'
+    pedir_raizes: bool = True
+    pedir_vertice: bool = True
 
     def dados(self):
+        if self.apresentacao not in ('Gráfico','Expressão da função'):
+            raise ValueError('Escolha gráfico ou expressão da função.')
+        if type(self.pedir_raizes) is not bool or type(self.pedir_vertice) is not bool:
+            raise ValueError('Selecione as informações a calcular.')
+        if self.apresentacao=='Expressão da função' and not (self.pedir_raizes or self.pedir_vertice):
+            raise ValueError('Marque raízes, coordenadas do vértice ou ambas.')
         if self.modo not in ('Coeficientes','Raízes e a'):
             raise ValueError('Escolha o modo de entrada da parábola.')
         if self.modo=='Raízes e a':
@@ -55,6 +64,36 @@ class Parabola:
             roots = sorted([q/self.a,self.c/q])
         return xv,yv,roots
 
+    def expressao(self):
+        from fractions import Fraction
+        from decimal import Decimal, localcontext
+        from app_graficos import numero
+        self.dados()
+        a,b,c=(Fraction(str(v)) for v in (self.a,self.b,self.c))
+        if self.modo=='Raízes e a':
+            r1=Fraction(str(numero(self.raiz1)))
+            r2=r1 if self.quantidade_raizes=='1' else Fraction(str(numero(self.raiz2)))
+            b=-a*(r1+r2); c=a*r1*r2
+        def formatar(v):
+            with localcontext() as ctx:
+                ctx.prec=1000
+                text=format(Decimal(v.numerator)/Decimal(v.denominator),'f')
+            if '.' in text: text=text.rstrip('0').rstrip('.')
+            return text.replace('.',',')
+        parts=[]
+        for value,term in ((a,'x²'),(b,'x'),(c,'')):
+            if not value: continue
+            magnitude='' if term and abs(value)==1 else formatar(abs(value))
+            sign=('-' if value<0 else '') if not parts else (' - ' if value<0 else ' + ')
+            parts.append(sign+magnitude+term)
+        return 'f(x) = '+''.join(parts)
+
+    def enunciado(self):
+        expression=self.expressao()
+        pedido=('as raízes reais e as coordenadas do vértice' if self.pedir_raizes and self.pedir_vertice
+                else 'as raízes reais' if self.pedir_raizes else 'as coordenadas do vértice')
+        return f'Dada a função <b>{expression}</b>, determine {pedido}.'
+
 
 def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None):
     from reportlab.lib.pagesizes import A4
@@ -75,9 +114,24 @@ def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None):
     pdf.setFont('Helvetica-Bold',size)
     pdf.drawCentredString(W/2,H-40,titulo)
     pdf.setFont('Helvetica',9)
-    pdf.drawString(30,H-57,'Determine c, as raízes, xv, yv, o sinal de delta e o sinal de a em cada gráfico.')
+    instruction=('Resolva as questões a seguir.' if all(f.apresentacao!='Gráfico' for f in funcoes)
+                 else 'Determine c, as raízes, xv, yv, o sinal de delta e o sinal de a em cada gráfico.')
+    pdf.drawString(30,H-57,instruction)
     for i,f in enumerate(funcoes):
         xv,yv,roots=f.dados()
+        if f.apresentacao=='Expressão da função':
+            from reportlab.platypus import Paragraph
+            from reportlab.lib.styles import ParagraphStyle
+            from reportlab.lib.enums import TA_JUSTIFY
+            left=30+(i%colunas)*(cw+gap); bottom=H-80-(i//colunas+1)*ch-(i//colunas)*gap
+            if quadro: left,bottom=quadro[:2]
+            pdf.setStrokeColor(HexColor('#cbd5e1')); pdf.setLineWidth(.6)
+            pdf.roundRect(left,bottom,cw,ch,6)
+            p=Paragraph(f'<b>({chr(97+i)})</b> '+f.enunciado(),ParagraphStyle('expressao',fontName='Helvetica',fontSize=10,leading=14,alignment=TA_JUSTIFY))
+            _,height=p.wrap(cw-22,ch-24)
+            if height>ch-24: raise ValueError('O enunciado não cabe. Use menos questões ou uma coluna.')
+            p.drawOn(pdf,left+11,bottom+ch-12-height)
+            continue
         # O enquadramento independe das opções de marcação.
         span=max([1,abs(xv),*[abs(r-xv) for r in roots]])
         xmin=min(0,xv-span*1.4); xmax=max(0,xv+span*1.4)
