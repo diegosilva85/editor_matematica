@@ -124,7 +124,7 @@ class EditorLista:
         if self.pending: self.window.after_cancel(self.pending)
         self.pending=self.window.after(500,self.atualizar)
 
-    def atualizar(self):
+    def atualizar(self,content=None):
         if getattr(self,'_exportando',False): return
         if self.pending: self.window.after_cancel(self.pending); self.pending=None
         selected=self.selecionado()
@@ -134,7 +134,9 @@ class EditorLista:
         if selected is not None and selected<len(self.lista.itens): self.tree.selection_set(str(selected))
         if not self.lista.itens: self.preview.limpar(); self.status.set('Lista vazia. Acrescente uma questão.'); return
         try:
-            self.sincronizar(); content=pdf_lista(self.lista); self.preview.mostrar(content)
+            self.sincronizar()
+            if content is None: content=pdf_lista(self.lista)
+            self.preview.mostrar(content)
             self.status.set(f'{len(self.lista.itens)} questões. A prévia usa a mesma diagramação do PDF salvo.')
             if any(g==2 and q.apresentacao=='Expressão da função' for g,q in self.lista.itens):
                 self.status.set(f'{len(self.lista.itens)} questões. Com expressões quadráticas: máximo de 2 por linha e 4 por página.')
@@ -149,10 +151,10 @@ class EditorLista:
         index=self.selecionado()
         if index is not None: QuestaoDialog(self,index)
 
-    def receber(self,questao,index=None):
+    def receber(self,questao,index=None,content=None):
         if index is None: self.lista.itens.append(questao)
         else: self.lista.itens[index]=questao
-        self.dirty=True; self.atualizar()
+        self.dirty=True; self.atualizar(content)
 
     def remover(self):
         index=self.selecionado()
@@ -236,6 +238,7 @@ class QuestaoDialog:
         notebook=ttk.Notebook(self.form); notebook.pack(fill='both',expand=True)
         grau=next(k for k,v in CONTEUDOS.items() if v==self.content.get())
         self.aba=Aba(notebook,grau) if grau in (1,2) else {3:AbaTriangulos,4:AbaSolidos,5:AbaExponenciais,6:AbaProgressao}[grau](notebook)
+        self.aba.apoio_embaixo=True
         if item is not None: self.aba.restaurar((grau,[item],1,''))
         else: self.aba.total.set(1); self.aba.criar()
         area=self.aba.corpo.master.master
@@ -272,6 +275,8 @@ class QuestaoDialog:
         self.timer=self.window.after(600,self.poll)
 
     def confirmar(self):
+        if self.timer:
+            self.window.after_cancel(self.timer); self.timer=None
         try:
             questao=self.questao()
             self.editor.sincronizar()
@@ -279,13 +284,24 @@ class QuestaoDialog:
             if self.index is None: items.append(questao)
             else: items[self.index]=questao
             # Valida a questão nas dimensões reais da lista antes de confirmar.
-            pdf_lista(Lista(self.editor.lista.titulo,self.editor.lista.colunas,self.editor.lista.por_pagina,items))
-            self.editor.receber(questao,self.index)
+            from copy import deepcopy
+            from progresso import gerar_com_progresso
+            snapshot=deepcopy(Lista(self.editor.lista.titulo,self.editor.lista.colunas,self.editor.lista.por_pagina,items))
+            if self.editor.pending:
+                self.editor.window.after_cancel(self.editor.pending); self.editor.pending=None
+            self.editor._exportando=True
+            try:
+                content=gerar_com_progresso(self.window,lambda:pdf_lista(snapshot))
+            finally:
+                self.editor._exportando=False
+            self.editor.receber(questao,self.index,content=content)
             if self.index is not None: self.fechar(); return
             self.status.set('Questão acrescentada à lista.')
             self.add.configure(text='Acrescentar outra questão',command=self.montar)
-        except (ValueError,OSError,OverflowError,tk.TclError) as e:
+        except Exception as e:
             messagebox.showerror('Confira a questão',str(e),parent=self.window)
+        finally:
+            if self.window.winfo_exists(): self.timer=self.window.after(600,self.poll)
 
     def fechar(self):
         if self.timer: self.window.after_cancel(self.timer)

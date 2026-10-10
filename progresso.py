@@ -32,6 +32,10 @@ def gerar_com_progresso(parent,tarefa):
     anterior=parent.grab_current()
     # Impede fechar a aplicação no meio da publicação do par PDF/JSON.
     janelas={parent.winfo_toplevel(),parent._root(),dialog}
+    ancestral=parent.master
+    while ancestral is not None:
+        if isinstance(ancestral,(tk.Tk,tk.Toplevel)): janelas.add(ancestral)
+        ancestral=ancestral.master
     protocolos={w:w.protocol('WM_DELETE_WINDOW') for w in janelas}
     for w in janelas: w.protocol('WM_DELETE_WINDOW',dialog.bell)
     fila=Queue(); resultado=[]

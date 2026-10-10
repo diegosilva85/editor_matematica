@@ -221,6 +221,15 @@ em segundo plano; a janela continua responsiva, mas a edição e o fechamento
 ficam bloqueados até concluir a publicação do PDF e JSON. A barra não representa
 um percentual estimado. Em caso de erro, ela fecha e o aplicativo mostra a causa.
 
+PA contextual também possui **Apoio ao professor**: resposta, razão, primeiro
+termo e termos relevantes; na soma, também n, último termo e total. O painel
+avisa sobre dados insuficientes, valores incompatíveis com o cenário, contagens
+inteiras e centavos, sem levar o gabarito para o PDF. Na janela de acrescentar
+questão à lista, os apoios de PA e segundo grau ficam abaixo do formulário,
+preservando a prévia à direita. Acrescentar ou editar uma questão mostra a
+barra de progresso e reutiliza o PDF calculado na prévia da lista, sem gerá-lo
+duas vezes. Isso não altera a quantidade de questões por página da lista final.
+
 ### Grupos de contextos: raízes e vértice
 
 Em **Expressão da função → Tipo de questão**, escolha **Sem contexto**,

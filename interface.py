@@ -67,7 +67,7 @@ class Aba:
             card=ttk.LabelFrame(self.corpo,text=f'Gráfico {i+1}',padding=12); card.pack(fill='x',pady=6)
             if self.grau==2:
                 quadro=card
-                card=ttk.Frame(quadro); card.pack(side='left',fill='both',expand=True)
+                card=ttk.Frame(quadro); card.pack(side='top' if getattr(self,'apoio_embaixo',False) else 'left',fill='both',expand=True)
             row=ttk.Frame(card); row.pack(fill='x')
             reg={}
             entradas={}
@@ -201,13 +201,17 @@ class Aba:
         ttk.Label(panel,textvariable=aviso,wraplength=265,foreground='#9a3412',justify='left').pack(anchor='w',pady=6)
         ttk.Separator(panel).pack(fill='x',pady=8)
         ttk.Label(panel,textvariable=dica,wraplength=265,justify='left').pack(anchor='w')
+        if getattr(self,'apoio_embaixo',False):
+            for widget in panel.winfo_children():
+                if isinstance(widget,ttk.Label): widget.configure(wraplength=550)
         pending=[None]
         def atualizar():
             pending[0]=None
             if not panel.winfo_exists(): return
             if reg['apresentacao'].get()!='Expressão da função':
                 panel.pack_forget(); return
-            panel.pack(side='right',fill='y',padx=(15,0),anchor='n')
+            if getattr(self,'apoio_embaixo',False): panel.pack(side='bottom',fill='x',pady=(12,0))
+            else: panel.pack(side='right',fill='y',padx=(15,0),anchor='n')
             campos={k:v.get() for k,v in reg.items() if not k.startswith('_')}
             texto,alerta=calcular(campos)
             resultado.set(texto); aviso.set(alerta)
@@ -529,6 +533,14 @@ class AbaProgressao(Aba):
 
     def editor(self,card,r):
         from contextos_pa import CENARIOS, grandeza
+        quadro=card
+        card=ttk.Frame(quadro)
+        card.pack(side='top' if getattr(self,'apoio_embaixo',False) else 'left',fill='both',expand=True)
+        apoio=ttk.LabelFrame(quadro,text='Apoio ao professor — somente no editor',padding=10)
+        apoio._largura_fixa=True
+        resultado=tk.StringVar(); aviso=tk.StringVar(); dica=tk.StringVar()
+        for var in (resultado,aviso,dica):
+            ttk.Label(apoio,textvariable=var,wraplength=550 if getattr(self,'apoio_embaixo',False) else 270,justify='left').pack(anchor='w',pady=5)
         row=ttk.Frame(card); row.pack(fill='x',pady=4)
         ttk.Label(row,text='Tipo:').pack(side='left')
         tipo=ttk.Combobox(row,textvariable=r['tipo'],values=TIPOS_PA,state='readonly',width=20)
@@ -564,6 +576,13 @@ class AbaProgressao(Aba):
                               {k:v.get() for k,v in r['valores'].items()},r['indicados'].get(),
                               **{k:r[k].get() for k in ('apresentacao','cenario','periodo','unidade','atividade')})
         def previa(*args):
+            if r['apresentacao'].get()=='Contextual':
+                if getattr(self,'apoio_embaixo',False): apoio.pack(side='bottom',fill='x',pady=(12,0))
+                else: apoio.pack(side='right',fill='y',padx=(15,0),anchor='n')
+                from apoio_pa import calcular
+                texto,alerta,orientacao=calcular(modelo())
+                resultado.set(texto); aviso.set(alerta); dica.set(orientacao)
+            else: apoio.pack_forget()
             try:
                 import re
                 text=modelo().enunciado()
