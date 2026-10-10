@@ -87,10 +87,13 @@ def paragrafo(grau,item,numero,width):
 def planejar(lista):
     """Linhas de altura uniforme, sem dividir questões ou ultrapassar 12/página."""
     from reportlab.lib.pagesizes import A4
-    W,H=A4; gap=12; width=(W-60-gap*(lista.colunas-1))/lista.colunas
+    expressoes=any(grau==2 and item.apresentacao=='Expressão da função' for grau,item in lista.itens)
+    cols=min(lista.colunas,2) if expressoes else lista.colunas
+    limit=min(lista.por_pagina,4) if expressoes else lista.por_pagina
+    W,H=A4; gap=12; width=(W-60-gap*(cols-1))/cols
     pages=[]; page=[]; top=H-78; count=0; index=0
     while index<len(lista.itens):
-        amount=min(lista.colunas,lista.por_pagina-count,len(lista.itens)-index)
+        amount=min(cols,limit-count,len(lista.itens)-index)
         row=[]
         for offset in range(amount):
             grau,item=lista.itens[index+offset]
@@ -99,7 +102,7 @@ def planejar(lista):
             if grau==2 and textual:
                 from contextos_quadraticas import imagem
                 textual=not bool(imagem(item))
-            graphic=0 if textual else (145 if lista.colunas==3 else 185 if lista.colunas==2 else 235)
+            graphic=0 if textual else (145 if cols==3 else 185 if cols==2 else 235)
             height=max(100,text_height+graphic+30)
             row.append((index+offset,width,height,text_height,graphic))
         height=max(x[2] for x in row)
@@ -110,7 +113,7 @@ def planejar(lista):
         for col,(i,w,h,th,gh) in enumerate(row):
             page.append((i,30+col*(width+gap),top-height,width,height,th,gh))
         index+=amount; count+=amount; top-=height+gap
-        if count==lista.por_pagina:
+        if count==limit:
             pages.append(page); page=[]; top=H-78; count=0
     if page: pages.append(page)
     return pages

@@ -129,17 +129,24 @@ class Parabola:
         return f'Dada a função <b>{expression}</b>, determine {pedido}.'
 
 
-def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None):
+def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None, inicio=0):
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.colors import HexColor
     if not 1 <= len(funcoes) <= 10 or colunas not in (1,2):
         raise ValueError('Use até 10 parábolas e 1 ou 2 por linha.')
+    expressoes=any(f.apresentacao=='Expressão da função' for f in funcoes)
+    if not quadro and expressoes:
+        colunas=2
+        if len(funcoes)>4:
+            for start in range(0,len(funcoes),4):
+                if start: pdf.showPage()
+                desenhar_pagina(pdf,funcoes[start:start+4],2,titulo,inicio=inicio+start)
+            return
     W,H=A4
     linhas=math.ceil(len(funcoes)/colunas)
     gap=min(12,40/linhas)
     cw=(W-60-(colunas-1)*gap)/colunas
-    contextual=any(f.apresentacao=='Expressão da função' and f.cenario!='Sem contexto' for f in funcoes)
-    ch=min(380 if contextual else 245,(H-110-(linhas-1)*gap)/linhas)
+    ch=min(380 if expressoes else 245,(H-110-(linhas-1)*gap)/linhas)
     if quadro: cw,ch=quadro[2:4]
     pdf.setFillColor(HexColor('#172b4d'))
     size=16
@@ -162,11 +169,16 @@ def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None):
             if quadro: left,bottom=quadro[:2]
             pdf.setStrokeColor(HexColor('#cbd5e1')); pdf.setLineWidth(.6)
             pdf.roundRect(left,bottom,cw,ch,6)
-            p=Paragraph(f'<b>({chr(97+i)})</b> '+f.enunciado(),ParagraphStyle('expressao',fontName='Helvetica',fontSize=10,leading=14,alignment=TA_JUSTIFY))
-            _,height=p.wrap(cw-22,ch-24)
             from contextos_quadraticas import imagem, desenhar_imagem
-            image_height=min(130,(cw-22)*2/3) if imagem(f) else 0
-            if height+image_height>ch-24: raise ValueError('O enunciado e a imagem não cabem. Use menos questões ou uma coluna.')
+            tem_imagem=bool(imagem(f))
+            for font_size in (10,9.5,9,8.5):
+                p=Paragraph(f'<b>({chr(97+inicio+i)})</b> '+f.enunciado(),ParagraphStyle('expressao',fontName='Helvetica',fontSize=font_size,leading=font_size*1.4,alignment=TA_JUSTIFY))
+                _,height=p.wrap(cw-22,ch-24)
+                disponivel=ch-30-height
+                if disponivel >= (65 if tem_imagem else 0): break
+            if disponivel < (65 if tem_imagem else 0):
+                raise ValueError('Enunciado muito longo. Reduza o tamanho dos números informados.')
+            image_height=min((cw-22)*2/3,disponivel) if tem_imagem else 0
             p.drawOn(pdf,left+11,bottom+ch-12-height)
             if image_height: desenhar_imagem(pdf,f,(left+11,bottom+ch-18-height-image_height,cw-22,image_height))
             continue
@@ -190,7 +202,7 @@ def desenhar_pagina(pdf, funcoes, colunas, titulo, quadro=None):
         pdf.setStrokeColor(HexColor('#cbd5e1')); pdf.setLineWidth(.6)
         pdf.roundRect(left,bottom,cw,ch,6)
         pdf.setFillColor(HexColor('#172b4d')); pdf.setFont('Helvetica-Bold',10)
-        pdf.drawString(left+10,bottom+ch-17,f'({chr(97+i)})')
+        pdf.drawString(left+10,bottom+ch-17,f'({chr(97+inicio+i)})')
         factor=min(1,ch/130)
         px,py=left+42,bottom+28*factor
         pw,ph=cw-60,ch-57*factor

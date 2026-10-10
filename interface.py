@@ -131,7 +131,7 @@ class Aba:
                 eixo.grid(row=2,column=1,sticky='w',padx=8)
                 img=ttk.Checkbutton(contexto,text='Incluir imagem (ilustrativa, sem escala)',variable=reg['incluir_imagem'])
                 img.grid(row=3,column=0,columnspan=2,sticky='w',pady=5)
-                ttk.Label(contexto,text='Use coeficientes coerentes com o contexto. Com imagens, prefira até 4 questões por página.',wraplength=600).grid(row=4,column=0,columnspan=2,sticky='w')
+                ttk.Label(contexto,text='Expressões: até 4 questões por página, 2 por linha. As demais seguem em novas folhas; imagens ajustadas automaticamente.',wraplength=600).grid(row=4,column=0,columnspan=2,sticky='w')
                 def atualizar_apresentacao(event=None,reg=reg,options=options,pedidos=pedidos,contexto=contexto,alvo=alvo,eixo=eixo,img=img):
                     contextual=reg['cenario'].get()!='Sem contexto'
                     alvo.configure(state='readonly' if contextual else 'disabled')

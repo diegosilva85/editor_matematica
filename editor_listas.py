@@ -135,6 +135,8 @@ class EditorLista:
         try:
             self.sincronizar(); content=pdf_lista(self.lista); self.preview.mostrar(content)
             self.status.set(f'{len(self.lista.itens)} questões. A prévia usa a mesma diagramação do PDF salvo.')
+            if any(g==2 and q.apresentacao=='Expressão da função' for g,q in self.lista.itens):
+                self.status.set(f'{len(self.lista.itens)} questões. Com expressões quadráticas: máximo de 2 por linha e 4 por página.')
         except (ValueError,OverflowError,OSError,tk.TclError) as e:
             self.preview.limpar('Corrija os dados para visualizar.'); self.status.set(str(e))
 

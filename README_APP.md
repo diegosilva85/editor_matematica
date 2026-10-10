@@ -195,9 +195,12 @@ goleiro, vôlei, jato de água e cabo. As ilustrações não estão em escala e 
 são recalculadas a partir dos coeficientes. Vôlei e goleiro usam as versões
 revisadas com trajetória. Todas as escolhas ficam no JSON e também funcionam
 no editor de listas e em sua prévia. Na aba tradicional, prefira até quatro
-questões por página quando houver imagens; se o conteúdo não couber, o app
-pede menos questões ou uma coluna, sem cortar o texto. No editor de listas,
-a paginação se ajusta automaticamente.
+questões por página: as expressões são distribuídas automaticamente em duas
+colunas, com até quatro questões por folha. A quinta inicia uma nova página,
+mantendo a sequência das letras e todas as questões no mesmo JSON. As imagens
+são redimensionadas para o espaço disponível, sem distorção. No editor de listas,
+listas com expressões quadráticas também usam no máximo duas colunas e quatro
+questões por página (ou os limites menores escolhidos pelo usuário).
 
 Nas questões de expressão, o painel **Apoio ao professor**, à direita de cada
 questão, calcula raízes reais e vértice enquanto os campos são editados. Mostra
