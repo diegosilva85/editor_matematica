@@ -1,0 +1,54 @@
+{
+  "method": "Built-in image_gen",
+  "common_prompt": "Use case: scientific-educational. Create a standalone illustration for a high-school trigonometry exercise, landscape 3:2 composition. Scene: {scene} Style: professional textbook black ink line art, natural recognizable proportions, moderately detailed observational drawing, elegant varying line weights, sparse fine hatching only. Strictly black and white on pure white background, no colors, no gray washes, no gradients. Not a primitive geometric icon or stick figures. Clear silhouette readable at 8cm print width. Generous white margins. No text, letters, numbers, equations, angle markers, measurement arrows, labels, borders or watermark. Scene illustration only, not a solved math diagram.",
+  "scenes": [
+    {
+      "file": "aviao.png",
+      "scene": "Passenger airplane taking off, detailed fuselage cockpit windows wings engines tail, inclined upward over a flat runway receding in perspective, small control tower far away."
+    },
+    {
+      "file": "barco.png",
+      "scene": "Small rowboat with a person holding oars crossing a river between two straight parallel banks, oblique aerial view showing both banks clearly, reeds and water ripples."
+    },
+    {
+      "file": "escada.png",
+      "scene": "Long straight ladder with realistic rails and evenly spaced rungs leaning against a vertical house wall, level pavement, brickwork details, window and roof cornice. Full ladder clearly visible."
+    },
+    {
+      "file": "sombra.png",
+      "scene": "Tall rectangular building on a level plaza casting a long clearly defined ground shadow to the left, sun in upper right, detailed windows entrance roof and pavement."
+    },
+    {
+      "file": "pessoa.png",
+      "scene": "Person standing on flat pavement at left looking upward at the roof of a tall building at right, full body natural anatomy clothed, building windows entrance roof, open white space between observer and building."
+    },
+    {
+      "file": "antena.png",
+      "scene": "Lattice radio antenna at left with transmitting element at its top and passenger airplane high at right, flat ground small communication station, precise structural details."
+    },
+    {
+      "file": "chacara.png",
+      "scene": "Rectangular small rural property seen from elevated oblique view, clearly four straight fence boundaries, farmhouse with tiled roof, orchard and vegetable rows, clean organized composition."
+    },
+    {
+      "file": "rampa.png",
+      "scene": "Straight access ramp connecting a horizontal lower pavement to an elevated entrance platform, realistic handrails support posts concrete edge, clear side three-quarter view, entrance doors."
+    },
+    {
+      "file": "pipa.png",
+      "scene": "Child at lower left standing in level field holding a taut straight kite string, diamond kite high at right with cross spars and bow tail, natural body and clothes, sparse grass."
+    },
+    {
+      "file": "cabo.png",
+      "scene": "Tall vertical lattice tower on level ground, one taut straight guy wire visibly connecting tower TOP to a ground anchor well to the left, bolts concrete foundation detailed structural braces."
+    },
+    {
+      "file": "teleferico.png",
+      "scene": "Mountain cable car cabin suspended from a straight ascending cable between a lower station at left and upper station at right, realistic cabin windows hanger wheels and towers, subtle mountain outlines behind."
+    },
+    {
+      "file": "mergulhador.png",
+      "scene": "Side underwater view of scuba diver swimming diagonally down to right from water surface upper left, realistic mask oxygen tank regulator wetsuit fins bubbles, visible horizontal water surface and sparse underwater rocks."
+    }
+  ]
+}

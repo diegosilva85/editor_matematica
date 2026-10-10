@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.codex/
+.agents/
+tmp/
+output/
+/*.pdf
+/*.json
+.env
+.env.*
+!.env.example
+*.log
