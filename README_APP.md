@@ -215,6 +215,12 @@ exemplo, a=1, b=-6, c=13). Não há raízes reais nessa situação, portanto o m
 A janela principal, o editor de listas e o formulário de questões abrem
 maximizados, mantendo os controles de minimizar, restaurar e fechar.
 
+Ao salvar um PDF nas abas ou no editor de listas (e ao visualizar PDF nas abas),
+uma barra animada indica que a geração está em andamento. O processamento ocorre
+em segundo plano; a janela continua responsiva, mas a edição e o fechamento
+ficam bloqueados até concluir a publicação do PDF e JSON. A barra não representa
+um percentual estimado. Em caso de erro, ela fecha e o aplicativo mostra a causa.
+
 ### Grupos de contextos: raízes e vértice
 
 Em **Expressão da função → Tipo de questão**, escolha **Sem contexto**,

@@ -687,11 +687,12 @@ def iniciar():
             json_path=Path(destino).with_suffix('.json')
             if not prever and json_path.exists() and not messagebox.askyesno('Substituir JSON?',f'O arquivo {json_path.name} já existe. Substituir o PDF e o JSON?'):
                 return
-            salvar_documento(destino,paginas)
+            from progresso import gerar_com_progresso
+            gerar_com_progresso(root,lambda:salvar_documento(destino,paginas))
             status.set(f'PDF e JSON salvos: {destino}')
             if prever: webbrowser.open(Path(destino).as_uri())
             else: messagebox.showinfo('Arquivos prontos',f'PDF:\n{destino}\n\nDados para reabrir:\n{json_path}')
-        except (ValueError,OSError,ImportError,OverflowError) as e:
+        except Exception as e:
             messagebox.showerror('Não foi possível gerar',str(e))
     def carregar():
         caminho=filedialog.askopenfilename(title='Carregar documento JSON',filetypes=[('Documento JSON','*.json')])

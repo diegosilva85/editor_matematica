@@ -125,6 +125,7 @@ class EditorLista:
         self.pending=self.window.after(500,self.atualizar)
 
     def atualizar(self):
+        if getattr(self,'_exportando',False): return
         if self.pending: self.window.after_cancel(self.pending); self.pending=None
         selected=self.selecionado()
         self.tree.delete(*self.tree.get_children())
@@ -184,10 +185,20 @@ class EditorLista:
             path=filedialog.asksaveasfilename(parent=self.window,defaultextension='.pdf',initialfile='lista_exercicios.pdf',filetypes=[('PDF','*.pdf')])
             if not path: return
             if Path(path).with_suffix('.json').exists() and not messagebox.askyesno('Substituir JSON?','O JSON correspondente já existe. Substituir o par PDF e JSON?',parent=self.window): return
-            salvar_lista(path,self.lista); self.dirty=False
+            from copy import deepcopy
+            from progresso import gerar_com_progresso
+            snapshot=deepcopy(self.lista)
+            if self.pending:
+                self.window.after_cancel(self.pending); self.pending=None
+            self._exportando=True
+            try:
+                gerar_com_progresso(self.window,lambda:salvar_lista(path,snapshot))
+            finally:
+                self._exportando=False
+            self.dirty=False
             self.status.set(f'PDF e JSON salvos em {path}')
             messagebox.showinfo('Lista salva','PDF e JSON salvos. Use o JSON para continuar a edição.',parent=self.window)
-        except (ValueError,OSError,OverflowError,tk.TclError) as e: messagebox.showerror('Não foi possível salvar',str(e),parent=self.window)
+        except Exception as e: messagebox.showerror('Não foi possível salvar',str(e),parent=self.window)
 
     def fechar(self):
         if self.descartar():
