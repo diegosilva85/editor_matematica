@@ -7,6 +7,7 @@ from xml.sax.saxutils import escape
 import random
 import time
 from progressao import numero
+from estatistica_multicolunas import TIPOS_MULTIPLOS,COMPARACAO,FALTANTE
 
 # nome: identificação, medida, população, unidade, mínimo, máximo, passo
 CONTEXTOS={
@@ -19,9 +20,10 @@ CONTEXTOS={
  'Temperaturas diárias': ('Dia','Temperatura (°C)','dias observados','graus Celsius','10','40','1'),
  'Tempo de deslocamento': ('Pessoa','Tempo (min)','pessoas','minutos','5','120','5'),
  'Produção de uma oficina': ('Dia','Peças produzidas','dias de produção','peças','0','100','1'),
- 'Consumo de água': ('Residência','Consumo mensal (m³)','residências','metros cúbicos','0','50','1')}
-INTEIROS={'Livros lidos','Produção de uma oficina'}
-TIPOS=('Simples','Frequência')
+ 'Consumo de água': ('Residência','Consumo mensal (m³)','residências','metros cúbicos','0','50','1'),
+ 'Pontuação no basquete': ('Jogador','Pontos','jogadores','pontos','0','50','1')}
+INTEIROS={'Livros lidos','Produção de uma oficina','Pontuação no basquete'}
+TIPOS=('Simples','Frequência',*TIPOS_MULTIPLOS)
 MEDIDAS=('media','moda','mediana')
 NOMES={'media':'média','moda':'moda','mediana':'mediana'}
 
@@ -58,7 +60,7 @@ def conferir_valor(cenario,v):
     if abs(v)>1_000_000: raise ValueError('Use valores de magnitude até 1000000.')
     if cenario!='Temperaturas diárias' and v<0: raise ValueError('Este contexto não aceita valores negativos.')
     if cenario=='Notas de alunos' and not 0<=v<=10: raise ValueError('As notas devem estar entre 0 e 10.')
-    if cenario in INTEIROS and v.denominator!=1: raise ValueError('Livros e peças devem ser quantidades inteiras.')
+    if cenario in INTEIROS and v.denominator!=1: raise ValueError('Livros, peças e pontos devem ser quantidades inteiras.')
     if cenario in ('Salários de funcionários','Compras no mês') and (v*100).denominator!=1:
         raise ValueError('Valores monetários devem ser múltiplos de um centavo.')
 
@@ -78,6 +80,7 @@ class Estatistica:
     maximo: str = '10'
     passo: str = '0,5'
     observacoes: str = '15'
+    quantidade_medidas: str = '4'
 
     def contagens(self):
         if self.tipo not in TIPOS or self.cenario not in CONTEXTOS: raise ValueError('Escolha o tipo de tabela e o contexto.')
@@ -99,20 +102,35 @@ class Estatistica:
         return counts
 
     def validar(self):
-        self.contagens()
+        if self.tipo in TIPOS_MULTIPLOS:
+            from estatistica_multicolunas import analisar
+            analisar(self)
+        else:self.contagens()
         if any(type(getattr(self,'pedir_'+k)) is not bool for k in MEDIDAS): raise ValueError('Seleções inválidas.')
-        if not any(getattr(self,'pedir_'+k) for k in MEDIDAS): raise ValueError('Selecione média, moda ou mediana.')
-        for k in ('meta_media','meta_moda','meta_mediana','minimo','maximo','passo','observacoes'):
+        if self.tipo==COMPARACAO:
+            if not (self.pedir_media or self.pedir_mediana):raise ValueError('Selecione maior média e/ou maior mediana.')
+        elif self.tipo!=FALTANTE and not any(getattr(self,'pedir_'+k) for k in MEDIDAS): raise ValueError('Selecione média, moda ou mediana.')
+        for k in ('meta_media','meta_moda','meta_mediana','minimo','maximo','passo','observacoes','quantidade_medidas'):
             if not isinstance(getattr(self,k),str) or len(getattr(self,k))>80: raise ValueError('Configuração de geração inválida.')
 
-    def resumo(self): return resumir(self.contagens())
+    def resumo(self):
+        if self.tipo in TIPOS_MULTIPLOS:
+            from estatistica_multicolunas import analisar
+            return analisar(self)
+        return resumir(self.contagens())
 
     def cabecalhos(self):
+        if self.tipo in TIPOS_MULTIPLOS:
+            from estatistica_multicolunas import cabecalhos
+            return cabecalhos(self)
         c=CONTEXTOS[self.cenario]
         return (c[0],c[1]) if self.tipo=='Simples' else (c[1],'Frequência')
 
     def enunciado(self):
         self.validar()
+        if self.tipo in TIPOS_MULTIPLOS:
+            from estatistica_multicolunas import enunciado
+            return enunciado(self)
         c=CONTEXTOS[self.cenario]
         intro={
           'Notas de alunos':'Uma turma realizou uma avaliação com notas de zero a dez.',
@@ -124,7 +142,8 @@ class Estatistica:
           'Temperaturas diárias':'Uma estação registrou a temperatura no mesmo horário em dias de um período de observação.',
           'Tempo de deslocamento':'Uma pesquisa registrou o tempo de deslocamento de algumas pessoas até o trabalho.',
           'Produção de uma oficina':'Uma oficina registrou a quantidade de peças produzidas em cada dia de um período.',
-          'Consumo de água':'Um levantamento registrou o consumo mensal de água de algumas residências.'}[self.cenario]
+          'Consumo de água':'Um levantamento registrou o consumo mensal de água de algumas residências.',
+          'Pontuação no basquete':'Uma equipe registrou os pontos marcados por seus jogadores em uma partida de basquete.'}[self.cenario]
         desc=('Cada linha apresenta uma observação individual.' if self.tipo=='Simples' else
               f'A frequência indica quantos {c[2]} apresentaram cada valor; considere essas repetições nos cálculos.')
         pedidos=[NOMES[k] for k in MEDIDAS if getattr(self,'pedir_'+k)]
@@ -133,6 +152,9 @@ class Estatistica:
 
 
 def apoio(q):
+    if q.tipo in TIPOS_MULTIPLOS:
+        from estatistica_multicolunas import apoio
+        return apoio(q)
     dica='Média: soma dos valores dividida pelo total de observações. Mediana: posições centrais dos valores ordenados. '
     dica+='Na frequência, cada valor é repetido conforme sua frequência. ' if q.tipo=='Frequência' else 'A primeira coluna identifica observações; os cálculos usam somente a segunda. '
     dica+='Moda: valor(es) mais frequente(s). Frequências todas iguais: amodal (convenção adotada).'
@@ -152,10 +174,13 @@ def apoio(q):
     except ValueError as exc: return 'Ajuste necessário: '+str(exc),dica
 
 
-def gerar(q,quantidade,seed=None):
+def gerar(q,quantidade,seed=None,_deadline=None):
     """Busca limitada; só devolve uma tabela se todas as metas forem exatas."""
     if type(quantidade) is not int or not 2<=quantidade<=20: raise ValueError('Escolha de 2 a 20 linhas.')
     if q.tipo not in TIPOS or q.cenario not in CONTEXTOS: raise ValueError('Contexto ou tipo inválido.')
+    if q.tipo in TIPOS_MULTIPLOS:
+        from estatistica_multicolunas import gerar
+        return gerar(q,quantidade,seed)
     lo,hi,step=map(numero,(q.minimo,q.maximo,q.passo))
     if step<=0 or hi<=lo: raise ValueError('Use mínimo menor que máximo e passo positivo.')
     conferir_valor(q.cenario,lo);conferir_valor(q.cenario,hi)
@@ -173,7 +198,7 @@ def gerar(q,quantidade,seed=None):
     if q.tipo=='Frequência' and slots<quantidade: raise ValueError('O intervalo não contém valores distintos suficientes para as linhas.')
     if 'media' in goals and (goals['media']*total-lo*total)%step:
         raise ValueError('A média não é possível com este total e passo. Ajuste o passo ou o total de observações.')
-    rng=random.Random(seed); grid=[lo+i*step for i in range(slots)]; end=time.monotonic()+5
+    rng=random.Random(seed); grid=[lo+i*step for i in range(slots)]; end=min(time.monotonic()+5,_deadline) if _deadline is not None else time.monotonic()+5
     def satisfaz(vals,weights):
         counts=Counter()
         for v,w in zip(vals,weights): counts[v]+=w
@@ -226,10 +251,18 @@ def gerar(q,quantidade,seed=None):
 def tabela(q,width):
     from reportlab.platypus import Table,TableStyle,Paragraph
     from reportlab.lib.styles import ParagraphStyle
-    style=ParagraphStyle('celula',fontName='Helvetica',fontSize=9,leading=11)
-    data=[list(q.cabecalhos())]+q.linhas
+    multi=q.tipo in TIPOS_MULTIPLOS
+    style=ParagraphStyle('celula',fontName='Helvetica',fontSize=8 if multi else 9,leading=10 if multi else 11)
+    rows=[list(row) for row in q.linhas]
+    if q.tipo==FALTANTE:
+        n=int(q.quantidade_medidas)
+        for row in rows:
+            if row[n].strip() in ('','?','x','X'):row[n]='?'
+    data=[list(q.cabecalhos())]+rows
     cells=[[Paragraph(escape(v),style) for v in row] for row in data]
-    table=Table(cells,colWidths=[width*.53,width*.47],hAlign='CENTER')
+    cols=len(data[0])
+    widths=[width*.25]+[width*.75/(cols-1)]*(cols-1) if multi else [width*.53,width*.47]
+    table=Table(cells,colWidths=widths,hAlign='CENTER')
     table.setStyle(TableStyle([('GRID',(0,0),(-1,-1),.5,'#707070'),('BACKGROUND',(0,0),(-1,0),'#eeeeee'),
                               ('VALIGN',(0,0),(-1,-1),'MIDDLE'),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
     return table

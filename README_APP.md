@@ -292,9 +292,10 @@ ponderado, sem expandir tabelas grandes. Empates na frequência máxima geram
 múltiplas modas; quando todos os valores distintos têm a mesma frequência,
 adotamos a convenção escolar de tabela amodal. Uma tabela constante tem moda.
 
-Dez contextos estão disponíveis em ambos os tipos: notas de alunos, salários,
+Onze contextos estão disponíveis: notas de alunos, salários,
 glicose em amostras fictícias, compras no mês, hábitos musicais, livros lidos,
-temperaturas, tempo de deslocamento, produção de peças e consumo de água.
+temperaturas, tempo de deslocamento, produção de peças, consumo de água e
+pontuação no basquete.
 O contexto musical usa horas de escuta, pois média e mediana não se aplicam
 a nomes de gêneros musicais. Dados de sangue não têm interpretação clínica.
 
@@ -312,3 +313,31 @@ Tabelas e configurações são preservadas no JSON. As tabelas usam até duas co
 de questões, com altura calculada pelo conteúdo e novas páginas automáticas.
 A aba aceita até 12 questões por documento, distribuídas em até quatro por folha
 (menos quando a altura das tabelas exigir).
+
+#### Várias medidas por linha
+
+Em **Tabela**, escolha **Comparação por linha** ou **Valor faltante pela média**.
+Escolha de 2 a 8 medidas por linha, além da coluna de identificação, e edite
+diretamente as células. Os contextos adaptam os cabeçalhos: alunos × avaliações,
+jogadores × partidas, funcionários × meses, pacientes × coletas, pessoas × dias
+de compras, participantes × semanas de escuta, leitores × meses, cidades × dias,
+pessoas × dias de deslocamento, equipes × dias de produção e residências × meses.
+
+- **Comparação por linha:** selecione maior média, maior mediana ou ambas. O aluno
+  calcula as medidas de cada linha e identifica o maior resultado; deve indicar
+  todos os participantes em caso de empate. A moda continua nos formatos originais.
+- **Valor faltante pela média:** deixe a última medida em branco (ou digite `?`)
+  nas linhas a resolver e preencha a coluna **Média** com o valor exato. A incógnita
+  aparece como `?` no PDF. Pode haver linhas completas, mas suas médias devem ser
+  consistentes. O apoio mostra a resposta sem incluí-la na tabela do aluno.
+- **Gerar valores:** nos dois formatos, as metas são aplicadas por linha. Para
+  valor faltante, uma meta de média preenchida vale para todas as linhas; sem essa
+  meta, o gerador respeita a média já preenchida em cada linha. Se a média da linha
+  também estiver vazia, ela é calculada a partir dos valores gerados. A busca tem
+  limite global de tempo e preserva os dados anteriores se não encontrar solução.
+
+Contagens de livros, peças e pontos devem ser inteiras; notas ficam entre 0 e 10.
+A média de uma contagem pode ser fracionária. Decimais com vírgula e frações são
+aceitos e preservados nas células editadas. Tabelas com mais de cinco colunas
+ocupam uma questão por linha no PDF e na lista, para manter a legibilidade.
+JSONs antigos com duas colunas continuam funcionando.

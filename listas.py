@@ -94,6 +94,7 @@ def planejar(lista):
     tabelas=any(grau==7 for grau,item in lista.itens)
     solidos_contextuais=any(grau==4 and item.cenario!='Sem contexto' for grau,item in lista.itens)
     cols=min(lista.colunas,2) if expressoes or tabelas or solidos_contextuais else lista.colunas
+    if any(grau==7 and len(item.cabecalhos())>5 for grau,item in lista.itens):cols=1
     limit=min(lista.por_pagina,4) if expressoes or solidos_contextuais else lista.por_pagina
     W,H=A4; gap=12; width=(W-60-gap*(cols-1))/cols
     pages=[]; page=[]; top=H-78; count=0; index=0

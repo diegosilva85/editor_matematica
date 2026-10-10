@@ -143,7 +143,7 @@ class EditorLista:
             elif any(g==4 and q.cenario!='Sem contexto' for g,q in self.lista.itens):
                 self.status.set(f'{len(self.lista.itens)} questões. Com geometria contextual: máximo de 2 por linha e 4 por página.')
             elif any(g==7 for g,q in self.lista.itens):
-                self.status.set(f'{len(self.lista.itens)} questões. Tabelas de estatística: até 2 por linha, com altura e paginação automáticas.')
+                self.status.set(f'{len(self.lista.itens)} questões. Estatística: até 2 por linha; tabelas com mais de 5 colunas usam a largura inteira.')
         except (ValueError,OverflowError,OSError,tk.TclError) as e:
             self.preview.limpar('Corrija os dados para visualizar.'); self.status.set(str(e))
 

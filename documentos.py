@@ -48,8 +48,8 @@ def validar_documento(dados):
                 if not isinstance(item,dict): raise ValueError('Item inválido.')
                 for k,v in item.items():
                     if k=='linhas' and grau==7:
-                        if not isinstance(v,list) or not 2<=len(v)<=20 or not all(isinstance(row,list) and len(row)==2 and all(isinstance(s,str) and len(s)<=80 for s in row) for row in v):
-                            raise ValueError('Tabela inválida: use de 2 a 20 linhas com duas células cada.')
+                        if not isinstance(v,list) or not 2<=len(v)<=20 or not all(isinstance(row,list) and 2<=len(row)<=10 and all(isinstance(s,str) and len(s)<=80 for s in row) for row in v):
+                            raise ValueError('Tabela inválida: use de 2 a 20 linhas e até 10 colunas.')
                     elif k=='xs':
                         if not isinstance(v,list) or len(v)>8 or not all(numero(x) for x in v): raise ValueError('Lista de pontos inválida.')
                     elif k=='valores':

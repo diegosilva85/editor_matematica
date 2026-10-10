@@ -36,9 +36,9 @@ class EstatisticaTests(unittest.TestCase):
         with self.assertRaises(ValueError): q.validar()
 
     def test_dez_contextos_nos_dois_tipos(self):
-        self.assertEqual(len(CONTEXTOS),10)
+        self.assertEqual(len(CONTEXTOS),11)
         for c in CONTEXTOS:
-            for tipo in TIPOS:
+            for tipo in ('Simples','Frequência'):
                 rows=[['A','2'],['B','4']] if tipo=='Simples' else [['2','3'],['4','1']]
                 q=Estatistica(cenario=c,tipo=tipo,linhas=rows)
                 q.validar();self.assertIn('tabela',q.enunciado())
@@ -61,7 +61,7 @@ class EstatisticaTests(unittest.TestCase):
             self.assertEqual(q.linhas,original)
 
     def test_gerador_livre_e_metas_individuais(self):
-        for tipo in TIPOS:
+        for tipo in ('Simples','Frequência'):
             for key in ('','meta_media','meta_moda','meta_mediana'):
                 q=Estatistica(tipo=tipo,passo='1')
                 if key: setattr(q,key,'5')
