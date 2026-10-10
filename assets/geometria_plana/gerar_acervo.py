@@ -116,14 +116,14 @@ def main():
     painel(FIGURAS[:22],'catalogo_foto',5,'22 figuras da foto - ordem de leitura')
     painel(FIGURAS[22:],'catalogo_novas',4,'7 novas figuras compostas')
     dados=dict(fonte='20261010_164750.jpg',metodo='Construção vetorial SVG e exportação PNG com ImageMagick; sem geração por IA.',
-               observacao='Acervo de ilustrações, ainda não integrado ao aplicativo. Sem medidas ou respostas. A numeração segue as linhas da foto, da esquerda para a direita. Regularizações e interpretações constam na descrição.',
+               observacao='Acervo de ilustrações utilizado na aba Geometria Plana. Sem medidas ou respostas. A numeração segue as linhas da foto, da esquerda para a direita. Regularizações e interpretações constam na descrição.',
                figuras=[{k:v for k,v in f.items() if k!='corpo'} for f in FIGURAS])
     (DESTINO/'catalogo.json').write_text(json.dumps(dados,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     cards=[]
     for f in FIGURAS:
         a=f['arquivo'];nome=html.escape(f['nome']);desc=html.escape(f['descricao'])
         cards.append(f'<article><img src="{a}.png" alt="{nome}"><h2>{f["numero"]:02d}. {nome}</h2><p>{desc}</p><a href="{a}.png">PNG</a> · <a href="{a}.svg">SVG editável</a></article>')
-    pagina='''<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acervo de geometria plana</title><style>body{font:16px system-ui;max-width:1300px;margin:30px auto;padding:20px;color:#222}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}article{border:1px solid #ddd;border-radius:8px;padding:16px}img{width:100%;aspect-ratio:1;object-fit:contain}h2{font-size:18px}p{line-height:1.5}a{color:#174a82}</style><h1>Acervo de geometria plana</h1><p>Figuras 01–22: foto do caderno, na ordem de leitura. Figuras 23–29: novas composições. Imagens sem medidas, prontas para receber anotações posteriormente. Ainda não integradas ao aplicativo.</p><main>'''+''.join(cards)+'</main></html>'
+    pagina='''<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acervo de geometria plana</title><style>body{font:16px system-ui;max-width:1300px;margin:30px auto;padding:20px;color:#222}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}article{border:1px solid #ddd;border-radius:8px;padding:16px}img{width:100%;aspect-ratio:1;object-fit:contain}h2{font-size:18px}p{line-height:1.5}a{color:#174a82}</style><h1>Acervo de geometria plana</h1><p>Figuras 01–22: foto do caderno, na ordem de leitura. Figuras 23–29: novas composições. Imagens ilustrativas usadas na aba Geometria Plana; as medidas são configuradas no editor e apresentadas nos enunciados.</p><main>'''+''.join(cards)+'</main></html>'
     (DESTINO/'index.html').write_text(pagina,encoding='utf-8')
     print(f'{len(FIGURAS)} figuras exportadas para {DESTINO}')
 

@@ -767,7 +767,8 @@ def iniciar():
     ttk.Button(root,text='Criar Lista',command=lambda:EditorLista(root)).pack(anchor='w',padx=14,pady=(0,8))
     notebook=ttk.Notebook(root); notebook.pack(fill='both',expand=True,padx=12)
     from interface_estatistica import AbaEstatistica
-    abas=[Aba(notebook,1),Aba(notebook,2),AbaTriangulos(notebook),AbaSolidos(notebook),AbaExponenciais(notebook),AbaProgressao(notebook),AbaEstatistica(notebook)]
+    from interface_plana import AbaPlana
+    abas=[Aba(notebook,1),Aba(notebook,2),AbaTriangulos(notebook),AbaSolidos(notebook),AbaExponenciais(notebook),AbaProgressao(notebook),AbaEstatistica(notebook),AbaPlana(notebook)]
     status=tk.StringVar(value='Crie as questões na aba desejada. Questões contextuais são distribuídas em páginas A4 adicionais.')
     ttk.Label(root,textvariable=status,padding=12,wraplength=850).pack(anchor='w')
     buttons=ttk.Frame(root,padding=12); buttons.pack(fill='x')

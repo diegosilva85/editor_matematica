@@ -7,7 +7,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 FORMATO='criador-de-graficos'
-LIMITES={1:(15,3),2:(10,2),3:(15,3),4:(12,3),5:(8,2),6:(12,2),7:(12,2)}
+LIMITES={1:(15,3),2:(10,2),3:(15,3),4:(12,3),5:(8,2),6:(12,2),7:(12,2),8:(12,3)}
 
 
 def dados_documento(paginas):
@@ -24,15 +24,16 @@ def validar_documento(dados):
     from exponenciais import Exponencial
     from progressao import Progressao
     from estatistica import Estatistica
-    classes={1:Funcao,2:Parabola,3:Triangulo,4:Solido,5:Exponencial,6:Progressao,7:Estatistica}
+    from geometria_plana import FiguraPlana
+    classes={1:Funcao,2:Parabola,3:Triangulo,4:Solido,5:Exponencial,6:Progressao,7:Estatistica,8:FiguraPlana}
     def numero(v):
         return type(v) in (int,float) and math.isfinite(v)
     try:
         if not isinstance(dados,dict) or dados.get('formato')!=FORMATO or type(dados.get('versao')) is not int or dados['versao']!=1:
             raise ValueError('Formato ou versão de JSON não suportado.')
         pages=dados['paginas']
-        if not isinstance(pages,list) or not 1<=len(pages)<=7:
-            raise ValueError('O documento deve conter de 1 a 7 abas.')
+        if not isinstance(pages,list) or not 1<=len(pages)<=8:
+            raise ValueError('O documento deve conter de 1 a 8 abas.')
         usados=set(); result=[]
         for page in pages:
             grau=page['aba']; cols=page['colunas']; titulo=page['titulo']; items=page['itens']

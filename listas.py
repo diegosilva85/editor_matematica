@@ -11,7 +11,7 @@ from documentos import validar_documento, FORMATO as FORMATO_ABAS, publicar_par
 
 FORMATO='lista-de-exercicios'
 CONTEUDOS={1:'Função de primeiro grau',2:'Função de segundo grau',3:'Trigonometria',
-           4:'Geometria espacial',5:'Função exponencial',6:'Progressão aritmética',7:'Estatística'}
+           4:'Geometria espacial',5:'Função exponencial',6:'Progressão aritmética',7:'Estatística',8:'Geometria plana'}
 
 
 @dataclass
@@ -69,7 +69,7 @@ def texto_questao(grau,item):
         from contextos_solidos import enunciado
         return '<b>'+escape(item.tipo)+'.</b> '+enunciado(item)
     if grau==2 and item.apresentacao=='Expressão da função': return item.enunciado()
-    if grau in (6,7): return item.enunciado()
+    if grau in (6,7,8): return item.enunciado()
     if grau==3 and item.apresentacao=='Contextual':
         from contextos import enunciado
         return escape(enunciado(item))
@@ -115,6 +115,7 @@ def planejar(lista):
             if grau==4 and item.modalidade=='Relação de Euler':
                 from euler import imagem
                 textual=not bool(imagem(item))
+            if grau==8:textual=not item.incluir_imagem
             graphic=0 if textual else (145 if cols==3 else 185 if cols==2 else 235)
             if grau==7:
                 from estatistica import tabela
@@ -153,6 +154,10 @@ class CanvasQuestao:
 
 
 def desenhar_item(pdf,grau,item,rect):
+    if grau==8:
+        from geometria_plana import desenhar_imagem
+        desenhar_imagem(pdf,item,rect)
+        return
     if grau==4 and item.modalidade=='Relação de Euler':
         from euler import desenhar_imagem
         desenhar_imagem(pdf,item,rect)

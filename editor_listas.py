@@ -239,10 +239,11 @@ class QuestaoDialog:
     def montar(self,item=None):
         from interface import Aba,AbaTriangulos,AbaSolidos,AbaExponenciais,AbaProgressao
         from interface_estatistica import AbaEstatistica
+        from interface_plana import AbaPlana
         for child in self.form.winfo_children(): child.destroy()
         notebook=ttk.Notebook(self.form); notebook.pack(fill='both',expand=True)
         grau=next(k for k,v in CONTEUDOS.items() if v==self.content.get())
-        self.aba=Aba(notebook,grau) if grau in (1,2) else {3:AbaTriangulos,4:AbaSolidos,5:AbaExponenciais,6:AbaProgressao,7:AbaEstatistica}[grau](notebook)
+        self.aba=Aba(notebook,grau) if grau in (1,2) else {3:AbaTriangulos,4:AbaSolidos,5:AbaExponenciais,6:AbaProgressao,7:AbaEstatistica,8:AbaPlana}[grau](notebook)
         self.aba.apoio_embaixo=True
         if item is not None: self.aba.restaurar((grau,[item],1,''))
         else: self.aba.total.set(1); self.aba.criar()

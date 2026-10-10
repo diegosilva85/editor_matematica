@@ -14,6 +14,31 @@ A quinta aba permite até 8 gráficos por página, com 1 ou 2 por linha. Escolha
 
 As páginas de primeiro e segundo grau não têm campos de nome e data. O enunciado de primeiro grau pede a expressão da função; o de segundo grau pede c, raízes, xv, yv e os sinais de delta e de a.
 
+## Geometria plana
+
+A aba **Geometria Plana** reúne as 29 figuras do acervo. Escolha pelo nome ou
+pelo catálogo visual e preencha as medidas solicitadas. Os campos aceitam
+decimais com vírgula, frações e raízes; a escrita digitada é preservada no
+enunciado. É possível escolher mm, cm ou m e informar raio ou diâmetro nas
+figuras circulares correspondentes.
+
+O botão **Gerar valores** sorteia medidas inteiras entre os limites informados,
+respeitando as condições da figura: recortes menores que a peça, furos que
+cabem no interior, bases compatíveis etc. Se o intervalo não permitir uma
+combinação válida, os dados atuais são preservados.
+
+Escolha **Área**, **Perímetro/comprimento** ou ambos. O enunciado explica a
+composição, as medidas e quais contornos considerar, inclusive bordas de furos.
+Nos círculos concêntricos, selecione disco central, anel ou disco maior; a
+hachura acompanha essa seleção. A imagem é opcional, ilustrativa e sem escala;
+as medidas aparecem no texto. O apoio ao professor mostra os resultados e
+alertas de validação, sem incluir respostas no PDF.
+
+A exportação permite até três questões por linha e doze por página, antecipando
+quebras quando necessário para manter a legibilidade. A aba funciona com
+PDF/JSON, documentos com várias abas e **Criar Lista**, inclusive na edição
+e restauração das questões.
+
 ## Geometria espacial
 
 ### Relação de Euler
