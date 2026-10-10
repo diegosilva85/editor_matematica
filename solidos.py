@@ -29,8 +29,20 @@ class Solido:
     incluir_imagem: bool = True
     unidade: str = 'cm'
     mostrar_medidas: bool = False
+    modalidade: str = 'Áreas e volumes'
+    euler_origem: str = 'Sólido predefinido'
+    euler_solido: str = 'Cubo'
+    euler_descobrir: str = 'V'
+    euler_v: str = '8'
+    euler_a: str = '12'
+    euler_f: str = '6'
 
     def validar(self):
+        from euler import EULER,MEDIDAS,contagens
+        if self.modalidade==EULER:
+            contagens(self)
+            return
+        if self.modalidade!=MEDIDAS: raise ValueError('Escolha áreas e volumes ou relação de Euler.')
         if self.tipo not in TIPOS: raise ValueError('Escolha um sólido.')
         if self.circular not in ('Raio','Diâmetro') or self.cone not in ('Altura','Geratriz'):
             raise ValueError('Escolha o tipo de medida.')
@@ -101,7 +113,7 @@ def desenho(tipo,circular='Raio',cone='Altura'):
 
 
 def desenhar_pagina(pdf,items,colunas,titulo,quadro=None):
-    if not quadro and any(s.cenario!='Sem contexto' for s in items):
+    if not quadro and any(s.cenario!='Sem contexto' or s.modalidade=='Relação de Euler' for s in items):
         from contextos_solidos import desenhar_paginas
         return desenhar_paginas(pdf,items,colunas,titulo)
     from reportlab.lib.pagesizes import A4

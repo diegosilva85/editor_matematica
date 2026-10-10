@@ -426,7 +426,7 @@ class AbaSolidos(Aba):
         self.quantidade.configure(to=12)
         notebook.tab(self.frame,text='Geometria espacial')
         self.titulo.set('Geometria espacial')
-        ttk.Label(self.frame,text='Contextos: até 2 por linha e 4 por página, com paginação automática. Sem contexto: até 3 por linha e 12 por página.').pack(anchor='w')
+        ttk.Label(self.frame,text='Áreas e volumes ou relação de Euler. Contextos: até 2 por linha e 4 por página. Sem contexto e Euler: até 3 por linha e 12 por página, com paginação automática.').pack(anchor='w')
 
     def criar(self):
         if not self.limpar(): return
@@ -464,8 +464,9 @@ class AbaSolidos(Aba):
             texto=ttk.Label(suporte,wraplength=largura_texto,justify='left'); texto.pack(anchor='w',fill='x')
             ajuda=ttk.Label(suporte,wraplength=largura_texto,justify='left'); ajuda.pack(anchor='w',pady=6)
             def modelo(r=r):
+                from interface_euler import CAMPOS_MODELO
                 return Solido(r['tipo'].get(),{k:v.get() for k,v in r['valores'].items()},r['circular'].get(),r['cone'].get(),
-                              **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade','mostrar_medidas')})
+                              **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade','mostrar_medidas',*CAMPOS_MODELO)})
             def atualizar_apoio(*args,r=r,texto=texto,ajuda=ajuda,modelo=modelo,preview=preview):
                 preview.delete('medidas')
                 try:
@@ -541,6 +542,8 @@ class AbaSolidos(Aba):
                     preview.create_line(*[v for x,y in points for v in (15+x*155,160-y*155)],fill='#2563eb',width=1.5,dash=(3,3) if dash else ())
                 for x,y,label in labels: preview.create_text(15+x*155,160-y*155,text=label,fill='#172b4d')
                 atualizar_apoio()
+            from interface_euler import instalar
+            atualizar=instalar(card,r,modelo,atualizar)
             r['atualizar']=atualizar
             for var in r['valores'].values(): var.trace_add('write',atualizar_apoio)
             contextos.bind('<<ComboboxSelected>>',atualizar); perguntas.bind('<<ComboboxSelected>>',atualizar)
@@ -548,10 +551,11 @@ class AbaSolidos(Aba):
 
     def pagina(self):
         items=[]
+        from interface_euler import CAMPOS_MODELO
         for i,r in enumerate(self.registros):
             try:
                 s=Solido(r['tipo'].get(),{k:v.get() for k,v in r['valores'].items()},r['circular'].get(),r['cone'].get(),
-                         **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade','mostrar_medidas')})
+                         **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade','mostrar_medidas',*CAMPOS_MODELO)})
                 s.validar(); items.append(s)
             except ValueError as e: raise ValueError(f'Sólido {i+1}: {e}')
         return 4,items,self.colunas.get(),self.titulo.get()

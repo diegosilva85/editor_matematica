@@ -16,6 +16,24 @@ As páginas de primeiro e segundo grau não têm campos de nome e data. O enunci
 
 ## Geometria espacial
 
+### Relação de Euler
+
+Em **Tipo de questão**, escolha **Relação de Euler**. Selecione um dos 11
+poliedros predefinidos ou **Informar quantidades**. Escolha a incógnita:
+**V** (vértices), **A** (arestas) ou **F** (faces).
+
+No modo manual, preencha as duas quantidades conhecidas com números inteiros;
+a terceira será calculada. O apoio ao professor mostra todas as contagens e
+a conferência de `V - A + F = 2`, mas o PDF informa somente os dados conhecidos.
+Combinações incompatíveis com um poliedro convexo são rejeitadas.
+
+Nos sólidos predefinidos, a figura aparece no editor e sua inclusão no PDF
+é opcional. As imagens são ilustrativas e podem omitir arestas ocultas;
+as contagens são cadastradas independentemente do desenho. Questões manuais
+não recebem uma figura arbitrária. Euler funciona também em **Criar Lista**
+e no carregamento de JSON, com até 3 questões por linha e 12 por página
+(a paginação pode antecipar a quebra para preservar a legibilidade).
+
 ### Questões contextualizadas
 
 Em cada cartão, escolha um **Contexto**, o que deseja perguntar e a unidade

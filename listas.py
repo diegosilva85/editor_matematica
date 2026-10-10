@@ -62,6 +62,9 @@ def carregar_lista(path):
 
 
 def texto_questao(grau,item):
+    if grau==4 and item.modalidade=='Relação de Euler':
+        from euler import enunciado
+        return enunciado(item)
     if grau==4 and item.cenario!='Sem contexto':
         from contextos_solidos import enunciado
         return '<b>'+escape(item.tipo)+'.</b> '+enunciado(item)
@@ -92,7 +95,7 @@ def planejar(lista):
     from reportlab.lib.pagesizes import A4
     expressoes=any(grau==2 and item.apresentacao=='Expressão da função' for grau,item in lista.itens)
     tabelas=any(grau==7 for grau,item in lista.itens)
-    solidos_contextuais=any(grau==4 and item.cenario!='Sem contexto' for grau,item in lista.itens)
+    solidos_contextuais=any(grau==4 and item.modalidade!='Relação de Euler' and item.cenario!='Sem contexto' for grau,item in lista.itens)
     cols=min(lista.colunas,2) if expressoes or tabelas or solidos_contextuais else lista.colunas
     if any(grau==7 and len(item.cabecalhos())>5 for grau,item in lista.itens):cols=1
     limit=min(lista.por_pagina,4) if expressoes or solidos_contextuais else lista.por_pagina
@@ -109,6 +112,9 @@ def planejar(lista):
                 from contextos_quadraticas import imagem
                 textual=not bool(imagem(item))
             if grau==4 and item.cenario!='Sem contexto': textual=not item.incluir_imagem
+            if grau==4 and item.modalidade=='Relação de Euler':
+                from euler import imagem
+                textual=not bool(imagem(item))
             graphic=0 if textual else (145 if cols==3 else 185 if cols==2 else 235)
             if grau==7:
                 from estatistica import tabela
@@ -147,6 +153,10 @@ class CanvasQuestao:
 
 
 def desenhar_item(pdf,grau,item,rect):
+    if grau==4 and item.modalidade=='Relação de Euler':
+        from euler import desenhar_imagem
+        desenhar_imagem(pdf,item,rect)
+        return
     if grau==4 and item.cenario!='Sem contexto':
         from contextos_solidos import desenhar_imagem
         desenhar_imagem(pdf,item,rect)

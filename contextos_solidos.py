@@ -298,7 +298,8 @@ def desenhar_paginas(pdf,items,colunas,titulo):
     from reportlab.lib.styles import ParagraphStyle
     if not 1<=len(items)<=12 or colunas not in (1,2,3): raise ValueError('Use até 12 questões e até 3 por linha.')
     for q in items: q.validar()
-    lista=Lista(titulo,colunas,4,[(4,q) for q in items]); pages=planejar(lista)
+    limite=4 if any(q.modalidade!='Relação de Euler' and q.cenario!='Sem contexto' for q in items) else 12
+    lista=Lista(titulo,colunas,limite,[(4,q) for q in items]); pages=planejar(lista)
     W,H=A4
     for n,page in enumerate(pages):
         if n: pdf.showPage()
