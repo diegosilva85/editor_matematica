@@ -1,0 +1,72 @@
+{
+  "status": "Estudos visuais gerados por IA; não integrados ao aplicativo. Dodecaedro, icosaedro e tetraedro truncado mostram apenas arestas visíveis. Não usar a contagem apenas dos traços visíveis como total do sólido.",
+  "ferramenta": "image_gen integrado, skill imagegen",
+  "imagens": [
+    {
+      "arquivo": "tetraedro.png",
+      "solido": "regular tetrahedron, exactly 4 equilateral triangular faces, 4 vertices, 6 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a regular tetrahedron, exactly 4 equilateral triangular faces, 4 vertices, 6 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": null
+    },
+    {
+      "arquivo": "cubo.png",
+      "solido": "cube, exactly 6 square faces, 8 vertices, 12 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a cube, exactly 6 square faces, 8 vertices, 12 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": null
+    },
+    {
+      "arquivo": "octaedro.png",
+      "solido": "regular octahedron, exactly 8 equilateral triangular faces, 6 vertices, 12 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a regular octahedron, exactly 8 equilateral triangular faces, 6 vertices, 12 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": "Add exactly the missing dashed straight edge joining the rear central dot (around 530,570) to the bottommost vertex (around 610,1070). Preserve all other edges exactly. Octahedron must have 12 edges; this missing hidden edge completes it."
+    },
+    {
+      "arquivo": "dodecaedro.png",
+      "solido": "regular dodecahedron, exactly 12 regular pentagonal faces, 20 vertices, 30 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a regular dodecahedron, exactly 12 regular pentagonal faces, 20 vertices, 30 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": "Preserve all solid visible surface edges and silhouette. Remove all hidden dashed edges to make this an opaque solid surface diagram with only visible pentagonal faces. No dashes should remain. No other changes. Black lines on white."
+    },
+    {
+      "arquivo": "icosaedro.png",
+      "solido": "regular icosahedron, exactly 20 equilateral triangular faces, 12 vertices, 30 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a regular icosahedron, exactly 20 equilateral triangular faces, 12 vertices, 30 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": "Preserve the visible surface edges and silhouette. Remove all hidden dashed edges to make this an opaque solid surface diagram, not a wireframe; no dashes should remain. No other changes. Black lines on white."
+    },
+    {
+      "arquivo": "prisma_triangular.png",
+      "solido": "right triangular prism, 2 triangular end faces and 3 rectangular lateral faces, exactly 6 vertices and 9 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a right triangular prism, 2 triangular end faces and 3 rectangular lateral faces, exactly 6 vertices and 9 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": null
+    },
+    {
+      "arquivo": "prisma_pentagonal.png",
+      "solido": "right regular pentagonal prism, 2 pentagonal bases and 5 rectangular lateral faces, exactly 10 vertices and 15 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a right regular pentagonal prism, 2 pentagonal bases and 5 rectangular lateral faces, exactly 10 vertices and 15 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": "Change ONLY the central vertical edge from the topmost vertex to the rear lower central vertex from solid to DASHED. Preserve every other line. This edge is hidden behind the prism."
+    },
+    {
+      "arquivo": "prisma_hexagonal.png",
+      "solido": "right regular hexagonal prism, 2 hexagonal bases and 6 rectangular lateral faces, exactly 12 vertices and 18 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a right regular hexagonal prism, 2 hexagonal bases and 6 rectangular lateral faces, exactly 12 vertices and 18 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": null
+    },
+    {
+      "arquivo": "piramide_quadrada.png",
+      "solido": "right square pyramid, 1 square base and 4 triangular lateral faces, exactly 5 vertices and 8 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a right square pyramid, 1 square base and 4 triangular lateral faces, exactly 5 vertices and 8 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": null
+    },
+    {
+      "arquivo": "piramide_pentagonal.png",
+      "solido": "right regular pentagonal pyramid, 1 pentagonal base and 5 triangular lateral faces, exactly 6 vertices and 10 edges",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a right regular pentagonal pyramid, 1 pentagonal base and 5 triangular lateral faces, exactly 6 vertices and 10 edges. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": null
+    },
+    {
+      "arquivo": "tetraedro_truncado.png",
+      "solido": "uniform truncated tetrahedron, exactly 4 equilateral triangular faces and 4 regular hexagonal faces, 12 vertices and 18 edges; formed by truncating each corner of a regular tetrahedron at one third of each edge",
+      "prompt": "Use case: scientific-educational. Create ONE standalone mathematically accurate geometry textbook illustration of a uniform truncated tetrahedron, exactly 4 equilateral triangular faces and 4 regular hexagonal faces, 12 vertices and 18 edges; formed by truncating each corner of a regular tetrahedron at one third of each edge. Black ink on pure white background, monochrome, no colors or gray fills, clean professional technical line drawing. Orthographic three-quarter perspective chosen to clearly distinguish all vertices and polygons. Visible edges solid black, genuinely occluded edges thin dashed black, no spurious face diagonals, no extra vertices, no decorative strokes. Center a single complete convex solid with generous white margin on a square canvas. All faces planar; exact topology is essential for an Euler formula exercise. No text, no labels, no numbers, no dimensions, no formulas, no arrows. These face/vertex/edge counts are internal construction constraints, never printed in the image.",
+      "ajuste": "Redraw this as a mathematically correct uniform truncated tetrahedron seen obliquely. It has precisely 4 triangular faces and 4 hexagonal faces, 12 vertices of degree 3, 18 edges. The reference is incorrect: do not retain its erroneous geometry. Show only visible edges in this version, omit ALL hidden dashed edges so the visible face structure is unambiguous. Show a large hexagonal face at front, an adjoining hexagonal face at right, and small triangular truncation faces. No spurious degree-two corners. Black lines on white, no text."
+    }
+  ]
+}
