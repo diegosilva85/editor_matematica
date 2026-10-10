@@ -17,6 +17,39 @@ def notas(**kwargs):
 
 
 class EstatisticaMulticolunasTests(unittest.TestCase):
+    def test_uma_linha_contextual_e_persistencia(self):
+        q=Estatistica(tipo=FALTANTE,linhas=[['Ana','6','7','8','','7']])
+        q.validar()
+        self.assertEqual(analisar(q)[0]['resposta'],7)
+        self.assertIn('nota mínima',q.enunciado())
+        self.assertIn('aprovação',q.enunciado())
+        self.assertIn('média de 7',q.enunciado())
+        generated=replace(q,linhas=gerar(q,1,seed=17));generated.validar()
+        self.assertEqual(len(generated.linhas),1)
+        pages=[(7,[q],2,'Estatística')]
+        self.assertEqual(validar_documento(dados_documento(pages)),pages)
+        lista=Lista(itens=[(7,q)])
+        self.assertEqual(validar_lista(dados_lista(lista)),lista)
+        with pdfium.PdfDocument(pdf_lista(lista)) as doc:
+            page=doc[0];tp=page.get_textpage();text=tp.get_text_range();tp.close();page.close()
+            self.assertIn('aprovação',text);self.assertIn('?',text)
+        for total in (0,21):
+            with self.assertRaises(ValueError):gerar(q,total)
+        with self.assertRaises(ValueError):replace(notas(),linhas=[notas().linhas[0]]).validar()
+
+    def test_contextos_faltantes_e_formatacao(self):
+        for c in CONTEXTOS:
+            q=Estatistica(tipo=FALTANTE,cenario=c)
+            q.linhas=redimensionar(q,1,[])
+            q.validar()
+            self.assertNotIn('Determine cada valor',q.enunciado())
+            self.assertIn('?',q.enunciado())
+        q=Estatistica(tipo=FALTANTE,cenario='Pontuação no basquete',quantidade_medidas='2',linhas=[['A & B','10','','21/2']])
+        self.assertIn('maior pontuador',q.enunciado())
+        self.assertIn('21/2',q.enunciado());self.assertIn('A &amp; B',q.enunciado())
+        q.linhas[0][-1]='10,5'
+        self.assertIn('10,5',q.enunciado())
+
     def test_comparacao_e_empates(self):
         q=notas();q.validar();s=q.resumo()
         self.assertEqual(s[0]['media'],8);self.assertEqual(s[0]['mediana'],Fraction(17,2))

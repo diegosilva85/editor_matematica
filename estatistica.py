@@ -176,7 +176,8 @@ def apoio(q):
 
 def gerar(q,quantidade,seed=None,_deadline=None):
     """Busca limitada; só devolve uma tabela se todas as metas forem exatas."""
-    if type(quantidade) is not int or not 2<=quantidade<=20: raise ValueError('Escolha de 2 a 20 linhas.')
+    minimo=1 if q.tipo==FALTANTE else 2
+    if type(quantidade) is not int or not minimo<=quantidade<=20: raise ValueError(f'Escolha de {minimo} a 20 linhas.')
     if q.tipo not in TIPOS or q.cenario not in CONTEXTOS: raise ValueError('Contexto ou tipo inválido.')
     if q.tipo in TIPOS_MULTIPLOS:
         from estatistica_multicolunas import gerar

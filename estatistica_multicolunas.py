@@ -3,6 +3,7 @@ from collections import Counter
 from dataclasses import replace
 import random
 import time
+from html import escape
 
 COMPARACAO='Comparação por linha'
 FALTANTE='Valor faltante pela média'
@@ -38,7 +39,8 @@ def analisar(q):
     from estatistica import numero,conferir_valor,resumir
     n=quantidade(q);faltante=q.tipo==FALTANTE
     if q.tipo not in TIPOS_MULTIPLOS or q.cenario not in CONTEXTOS_MULTIPLOS: raise ValueError('Contexto ou formato inválido.')
-    if not isinstance(q.linhas,list) or not 2<=len(q.linhas)<=20: raise ValueError('Use de 2 a 20 linhas.')
+    minimo=1 if faltante else 2
+    if not isinstance(q.linhas,list) or not minimo<=len(q.linhas)<=20: raise ValueError(f'Use de {minimo} a 20 linhas.')
     labels=set();result=[];ocultos=0
     for i,row in enumerate(q.linhas,1):
         try:
@@ -76,12 +78,41 @@ def vencedores(q):
 def enunciado(q):
     intro=CONTEXTOS_MULTIPLOS[q.cenario][2]
     if q.tipo==FALTANTE:
-        return intro+' A última coluna informa a média aritmética exata das '+str(quantidade(q))+' medidas de cada linha. Determine cada valor indicado por ?, usando a média fornecida.'
+        return enunciado_faltante(q)
     medidas=[]
     if q.pedir_media: medidas.append('média aritmética')
     if q.pedir_mediana: medidas.append('mediana')
     pedido=' e a '.join(medidas)
     return intro+' Calcule a '+pedido+' de cada linha e identifique quem apresenta o maior valor em cada medida solicitada. Se houver empate, indique todos os envolvidos.'
+
+
+def enunciado_faltante(q):
+    """Metas narrativas, sem inserir a resposta calculada no enunciado."""
+    from estatistica import numero
+    n=quantidade(q)
+    textos={
+        'Notas de alunos':('As avaliações têm notas de zero a dez e o mesmo peso. A coluna Média indica a média mínima exigida para aprovação em cada caso.', 'Qual é a nota mínima necessária na última avaliação para obter aprovação?'),
+        'Pontuação no basquete':('Cada jogador pretende alcançar, ao final das partidas apresentadas, a média de pontos do maior pontuador de seu campeonato, indicada na coluna Média.', 'Quantos pontos deve marcar na última partida para alcançar exatamente essa média?'),
+        'Salários de funcionários':('Uma empresa planeja a remuneração de seus funcionários no período apresentado, em reais. A coluna Média indica a remuneração mensal média planejada para cada funcionário.', 'Qual deverá ser a remuneração do último mês para atingir essa média no período?'),
+        'Glicose em amostras de sangue':('Uma atividade escolar apresenta coletas fictícias de glicose, em mg/dL. O resultado da última coleta foi apagado, mas a média das coletas foi preservada na coluna Média. Os dados não têm finalidade clínica.', 'Qual era o resultado da última coleta para que as amostras apresentassem essa média?'),
+        'Compras no mês':('Um planejamento de compras estabelece um gasto médio diário, em reais, indicado na coluna Média. Considere apenas os dias da tabela.', 'Quanto deverá ser gasto no último dia para que o gasto médio seja exatamente o planejado?'),
+        'Hábitos musicais':('Uma pesquisa registrou as horas semanais de escuta de música. A coluna Média informa a média semanal do período, mas o registro da última semana está incompleto.', 'Quantas horas de música foram ouvidas na última semana para que a média fosse a informada?'),
+        'Livros lidos':('Um desafio de leitura estabelece para cada leitor uma meta de livros lidos por mês, em média, indicada na coluna Média. As quantidades da tabela são mensais, não acumuladas.', 'Quantos livros deverão ser concluídos no último mês para atingir exatamente a média do desafio?'),
+        'Temperaturas diárias':('Estações meteorológicas mediram a temperatura, em graus Celsius, no mesmo horário durante os dias apresentados. A média do período foi preservada na coluna Média, mas falta a última medição.', 'Qual foi a temperatura registrada no último dia para que a média do período fosse a informada?'),
+        'Tempo de deslocamento':('Uma pesquisa registrou o tempo de deslocamento até o trabalho, em minutos, nos dias apresentados. A coluna Média informa o tempo médio do período, mas falta o registro do último dia.', 'Quanto tempo durou o deslocamento no último dia para que a média fosse a informada?'),
+        'Produção de uma oficina':('Uma oficina definiu para cada equipe uma meta de produção média diária, indicada na coluna Média. A tabela mostra a quantidade de peças produzidas a cada dia.', 'Quantas peças deverão ser produzidas no último dia para atingir exatamente a média planejada?'),
+        'Consumo de água':('Um levantamento registrou o consumo mensal de água, em metros cúbicos. A coluna Média informa o consumo médio do período, mas o registro do último mês está incompleto.', 'Qual foi o consumo de água no último mês para que a média fosse a informada?'),
+    }
+    intro,pergunta=textos[q.cenario]
+    if len(q.linhas)==1:
+        row=q.linhas[0]
+        referencia=f' Para {escape(row[0])}, considere {n} registros e média de {escape(row[-1])}.'
+    else:
+        referencia=f' Considere os {n} registros de cada linha e responda somente aos casos indicados por ?.'
+        # Com a mesma referência, todos os jogadores podem pertencer ao mesmo campeonato.
+        if q.cenario=='Pontuação no basquete' and len({numero(r[-1]) for r in q.linhas})==1:
+            intro=intro.replace('de seu campeonato','do campeonato')
+    return intro+referencia+' '+pergunta
 
 
 def apoio(q):
@@ -130,7 +161,8 @@ def redimensionar(q,total,anteriores):
 
 def gerar(q,total,seed=None):
     from estatistica import Estatistica,gerar as gerar_simples,fmt,numero
-    if type(total) is not int or not 2<=total<=20: raise ValueError('Escolha de 2 a 20 linhas.')
+    minimo=1 if q.tipo==FALTANTE else 2
+    if type(total) is not int or not minimo<=total<=20: raise ValueError(f'Escolha de {minimo} a 20 linhas.')
     n=quantidade(q);rng=random.Random(seed);deadline=time.monotonic()+5
     label=CONTEXTOS_MULTIPLOS[q.cenario][0];rows=[]
     for i in range(total):

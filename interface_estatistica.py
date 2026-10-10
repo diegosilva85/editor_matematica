@@ -89,11 +89,14 @@ class AbaEstatistica(Aba):
         colunas.configure(command=montar_linhas)
         def ajustar_tipo():
             t=r['tipo'].get();multi=t in TIPOS_MULTIPLOS
+            minimo=1 if t==FALTANTE else 2
+            n.configure(from_=minimo)
+            if r['_n'].get()<minimo:r['_n'].set(minimo)
             colunas.configure(state='readonly' if multi else 'disabled')
             for k,widget in selecoes.items():
                 widget.configure(state='disabled' if t==FALTANTE or (t==COMPARACAO and k=='moda') else 'normal',
                                  text=('Maior '+NOMES[k] if t==COMPARACAO and k!='moda' else NOMES[k].capitalize()))
-            instrucao.set('Deixe a última medida em branco (ou digite ?) nas linhas com incógnita. Preencha a coluna Média com a média exata. As outras células são editáveis.' if t==FALTANTE else
+            instrucao.set('Use de 1 a 20 linhas. Deixe a última medida em branco (ou digite ?). Preencha Média com a referência do contexto: aprovação, meta ou média registrada, sem arredondamento.' if t==FALTANTE else
                           'Cada linha é analisada separadamente. Selecione maior média e/ou maior mediana. Empates são permitidos.' if t==COMPARACAO else
                           'Edite diretamente as duas colunas da tabela.')
         tipo_anterior=[q.tipo]
