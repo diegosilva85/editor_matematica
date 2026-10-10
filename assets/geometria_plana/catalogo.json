@@ -1,0 +1,210 @@
+{
+  "fonte": "20261010_164750.jpg",
+  "metodo": "Construção vetorial SVG e exportação PNG com ImageMagick; sem geração por IA.",
+  "observacao": "Acervo de ilustrações, ainda não integrado ao aplicativo. Sem medidas ou respostas. A numeração segue as linhas da foto, da esquerda para a direita. Regularizações e interpretações constam na descrição.",
+  "figuras": [
+    {
+      "numero": 1,
+      "arquivo": "01_quadrado",
+      "nome": "Quadrado",
+      "origem": "foto",
+      "descricao": "Quatro lados iguais e quatro ângulos retos."
+    },
+    {
+      "numero": 2,
+      "arquivo": "02_retangulo_horizontal",
+      "nome": "Retângulo horizontal",
+      "origem": "foto",
+      "descricao": "Retângulo com base maior que a altura."
+    },
+    {
+      "numero": 3,
+      "arquivo": "03_retangulo_vertical",
+      "nome": "Retângulo vertical",
+      "origem": "foto",
+      "descricao": "Retângulo com altura maior que a base."
+    },
+    {
+      "numero": 4,
+      "arquivo": "04_triangulo_retangulo",
+      "nome": "Triângulo retângulo",
+      "origem": "foto",
+      "descricao": "Catetos vertical e horizontal, com ângulo reto no canto inferior esquerdo."
+    },
+    {
+      "numero": 5,
+      "arquivo": "05_triangulo_isosceles",
+      "nome": "Triângulo isósceles",
+      "origem": "foto",
+      "descricao": "Interpretação regularizada do segundo triângulo da primeira linha da foto."
+    },
+    {
+      "numero": 6,
+      "arquivo": "06_circulo",
+      "nome": "Círculo",
+      "origem": "foto",
+      "descricao": "Círculo simples, sem indicação de raio ou diâmetro."
+    },
+    {
+      "numero": 7,
+      "arquivo": "07_forma_l",
+      "nome": "Figura em L",
+      "origem": "foto",
+      "descricao": "União de dois retângulos; recorte retangular no canto superior direito."
+    },
+    {
+      "numero": 8,
+      "arquivo": "08_forma_t",
+      "nome": "Figura em T",
+      "origem": "foto",
+      "descricao": "Barra horizontal retangular com haste retangular central."
+    },
+    {
+      "numero": 9,
+      "arquivo": "09_casa",
+      "nome": "Pentágono em forma de casa",
+      "origem": "foto",
+      "descricao": "Retângulo encimado por um triângulo isósceles."
+    },
+    {
+      "numero": 10,
+      "arquivo": "10_retangulo_semicirculo",
+      "nome": "Retângulo com semicírculo",
+      "origem": "foto",
+      "descricao": "Semicírculo superior cujo diâmetro coincide com o lado superior do retângulo."
+    },
+    {
+      "numero": 11,
+      "arquivo": "11_semicirculo_triangulo",
+      "nome": "Semicírculo com triângulo",
+      "origem": "foto",
+      "descricao": "Semicírculo superior e triângulo isósceles inferior, unidos pelo diâmetro/base."
+    },
+    {
+      "numero": 12,
+      "arquivo": "12_circulos_concentricos",
+      "nome": "Círculos concêntricos",
+      "origem": "foto",
+      "descricao": "Círculo maior e disco central hachurado, preservando a indicação da foto. O anel permanece branco."
+    },
+    {
+      "numero": 13,
+      "arquivo": "13_hexagono",
+      "nome": "Hexágono regular",
+      "origem": "foto",
+      "descricao": "Seis lados iguais, com vértices superior e inferior."
+    },
+    {
+      "numero": 14,
+      "arquivo": "14_trapezio",
+      "nome": "Trapézio retângulo",
+      "origem": "foto",
+      "descricao": "Bases horizontais paralelas e lado esquerdo perpendicular às bases."
+    },
+    {
+      "numero": 15,
+      "arquivo": "15_retangulo_triangulo_parcial",
+      "nome": "Retângulo com triângulo parcial",
+      "origem": "foto",
+      "descricao": "Retângulo com um triângulo retângulo sobre a parte esquerda do lado superior; preserva o topo inclinado e o trecho horizontal da foto."
+    },
+    {
+      "numero": 16,
+      "arquivo": "16_quadrado_circulo_inscrito",
+      "nome": "Quadrado com círculo inscrito",
+      "origem": "foto",
+      "descricao": "Círculo tangente aos quatro lados do quadrado; apenas os quatro cantos externos ao círculo são hachurados."
+    },
+    {
+      "numero": 17,
+      "arquivo": "17_estrela_quatro_pontas",
+      "nome": "Estrela de quatro pontas",
+      "origem": "foto",
+      "descricao": "Quadrado central e quatro triângulos isósceles externos. Linhas tracejadas indicam o quadrado, como na foto."
+    },
+    {
+      "numero": 18,
+      "arquivo": "18_seta",
+      "nome": "Seta para a direita",
+      "origem": "foto",
+      "descricao": "Retângulo unido a um triângulo cuja base é maior que a altura do retângulo."
+    },
+    {
+      "numero": 19,
+      "arquivo": "19_capsula",
+      "nome": "Cápsula",
+      "origem": "foto",
+      "descricao": "Retângulo horizontal com dois semicírculos laterais de mesmo diâmetro."
+    },
+    {
+      "numero": 20,
+      "arquivo": "20_coracao_arredondado",
+      "nome": "Coração de semicírculos",
+      "origem": "foto",
+      "descricao": "Um semicírculo inferior grande e dois semicírculos superiores menores; o fundo é arredondado, como no esboço."
+    },
+    {
+      "numero": 21,
+      "arquivo": "21_coracao_poligonal",
+      "nome": "Coração poligonal",
+      "origem": "foto",
+      "descricao": "Triângulo inferior e dois triângulos superiores, formando um coração angular com entalhe central."
+    },
+    {
+      "numero": 22,
+      "arquivo": "22_quadrado_quatro_semicirculos",
+      "nome": "Quadrado com quatro semicírculos",
+      "origem": "foto",
+      "descricao": "Quatro semicírculos externos, um sobre cada lado do quadrado central. As divisões internas são tracejadas, como na foto."
+    },
+    {
+      "numero": 23,
+      "arquivo": "23_cruz",
+      "nome": "Cruz de retângulos",
+      "origem": "nova",
+      "descricao": "União de dois retângulos perpendiculares, com braços de mesma largura."
+    },
+    {
+      "numero": 24,
+      "arquivo": "24_forma_u",
+      "nome": "Figura em U",
+      "origem": "nova",
+      "descricao": "Retângulo grande com recorte retangular central aberto na parte superior."
+    },
+    {
+      "numero": 25,
+      "arquivo": "25_retangulo_recorte_semicircular",
+      "nome": "Retângulo com recorte semicircular",
+      "origem": "nova",
+      "descricao": "Recorte de um semicírculo no centro do lado superior de um retângulo."
+    },
+    {
+      "numero": 26,
+      "arquivo": "26_semi_anel",
+      "nome": "Semi-anel",
+      "origem": "nova",
+      "descricao": "Região entre dois semicírculos concêntricos, fechada por dois segmentos na mesma linha de base."
+    },
+    {
+      "numero": 27,
+      "arquivo": "27_retangulo_furo_circular",
+      "nome": "Placa com furo circular",
+      "origem": "nova",
+      "descricao": "Retângulo com abertura circular central. A hachura indica somente a região da placa, excluindo o disco."
+    },
+    {
+      "numero": 28,
+      "arquivo": "28_trapezio_semicirculo",
+      "nome": "Trapézio com semicírculo",
+      "origem": "nova",
+      "descricao": "Trapézio isósceles encimado por um semicírculo de diâmetro igual à base menor."
+    },
+    {
+      "numero": 29,
+      "arquivo": "29_quadrado_recorte_triangular",
+      "nome": "Quadrado com recorte triangular",
+      "origem": "nova",
+      "descricao": "Quadrado com recorte triangular isósceles aberto no centro do lado superior."
+    }
+  ]
+}
