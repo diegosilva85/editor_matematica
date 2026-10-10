@@ -5,7 +5,7 @@ from pathlib import Path
 from dataclasses import replace
 import pypdfium2 as pdfium
 from solidos import Solido
-from contextos_solidos import CENARIOS, PADRAO, enunciado, grandezas, imersao, imagem, apoio
+from contextos_solidos import CENARIOS, PADRAO, enunciado, grandezas, imersao, imagem, apoio, anotacoes, desenhar_imagem
 from documentos import dados_documento, validar_documento, carregar_documento
 from listas import Lista, dados_lista, validar_lista, planejar, pdf_lista
 from parabolas import salvar_documento
@@ -17,6 +17,56 @@ def exemplo(cenario, objetivo=None, **kw):
 
 
 class ContextosSolidosTests(unittest.TestCase):
+    def test_areas_disponiveis_e_abertas(self):
+        esperados={'Caixa de embalagem':216,'Aquário sem tampa':48,
+                   'Lixeira cilíndrica aberta':120*math.pi,'Lata com rótulo':120*math.pi,
+                   'Canteiro elevado':54*math.sqrt(3),'Barraca de camping':72,
+                   'Casquinha de sorvete':65*math.pi,
+                   'Cobertura de um quiosque':12*math.sqrt(153),
+                   'Embalagem tetraédrica':27*math.sqrt(3),'Bola decorativa':100*math.pi}
+        for c,value in esperados.items():
+            q=exemplo(c,'Área disponível');q.validar()
+            self.assertAlmostEqual(grandezas(q)['Área disponível'],value)
+            q.objetivo='Volume e área disponível'
+            self.assertIn('volume',enunciado(q)); self.assertIn('área',enunciado(q));self.assertTrue(apoio(q))
+            q.objetivo='Volume e área total';self.assertIn('área total',enunciado(q));self.assertTrue(apoio(q))
+        self.assertEqual(grandezas(exemplo('Aquário sem tampa'))['Área total'],384)
+        self.assertAlmostEqual(grandezas(exemplo('Casquinha de sorvete'))['Área total'],65*math.pi)
+
+    def test_anotacoes_apenas_dados_fornecidos(self):
+        for c in CENARIOS:
+            q=exemplo(c,mostrar_medidas=True)
+            self.assertTrue(anotacoes(q))
+            self.assertFalse(anotacoes(replace(q,mostrar_medidas=False)))
+            self.assertFalse(anotacoes(replace(q,incluir_imagem=False)))
+        q=exemplo('Teste em tanque cilíndrico','Volume pela elevação',mostrar_medidas=True)
+        keys=[a[0] for a in anotacoes(q)]
+        self.assertNotIn('r',keys);self.assertNotIn('d',keys)
+        self.assertIn('nivel',keys);self.assertIn('elevacao',keys)
+        q=exemplo('Casquinha de sorvete',mostrar_medidas=True)
+        q.circular='Diâmetro';q.cone='Geratriz';q.valores.update(d='7,6',g='13/2')
+        keys=[a[0] for a in anotacoes(q)]
+        self.assertEqual(keys,['d','g']);self.assertEqual(anotacoes(q)[0][2],'7,6')
+        pages=[(4,[q],2,'Medidas')]
+        self.assertEqual(validar_documento(dados_documento(pages)),pages)
+        self.assertEqual(validar_lista(dados_lista(Lista(itens=[(4,q)]))).itens,[(4,q)])
+        q.mostrar_medidas='sim'
+        with self.assertRaises(ValueError):q.validar()
+
+    def test_rotulos_pdf_ligados_desligados(self):
+        from io import BytesIO
+        from reportlab.pdfgen.canvas import Canvas
+        def render(q):
+            stream=BytesIO();canvas=Canvas(stream)
+            desenhar_imagem(canvas,q,(20,20,260,185));canvas.showPage();canvas.save()
+            with pdfium.PdfDocument(stream.getvalue()) as doc:
+                return doc[0].get_textpage().get_text_range()
+        q=exemplo('Aquário sem tampa',mostrar_medidas=True)
+        q.valores['a']='7,6'
+        self.assertIn('7,6',render(q))
+        self.assertNotIn('7,6',render(replace(q,mostrar_medidas=False)))
+        self.assertEqual(render(replace(q,incluir_imagem=False)),'')
+
     def test_cenarios_e_perguntas(self):
         self.assertEqual(len(CENARIOS),12)
         for c,(_,_,alvos) in CENARIOS.items():

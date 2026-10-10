@@ -20,6 +20,23 @@ CENARIOS = {
     'Teste em tanque cilíndrico': ('Esfera', 'imersao_tanque', ('Volume deslocado', 'Elevação do nível', 'Nível final', 'Espaço até a borda', 'Transbordamento', 'Volume pela elevação')),
 }
 IMERSAO = tuple(CENARIOS)[-2:]
+# Mantém os nomes antigos aceitos ao carregar JSON e amplia as escolhas da UI.
+for _cenario, (_tipo, _imagem, _alvos) in tuple(CENARIOS.items()):
+    if _cenario not in IMERSAO:
+        CENARIOS[_cenario]=(_tipo,_imagem,tuple(dict.fromkeys((*_alvos,'Área total','Área disponível','Volume e área total','Volume e área disponível'))))
+
+SUPERFICIES = {
+    'Caixa de embalagem': 'de papel necessária para envolver todas as seis faces externas da caixa, sem sobreposição',
+    'Aquário sem tampa': 'do fundo disponível para distribuir uma camada de cascalho, sem incluir as paredes',
+    'Lixeira cilíndrica aberta': 'da superfície lateral externa disponível para pintura, sem incluir o fundo',
+    'Lata com rótulo': 'da superfície lateral disponível para o rótulo, sem incluir as bases',
+    'Canteiro elevado': 'da superfície horizontal disponível para plantio, correspondente à base hexagonal',
+    'Barraca de camping': 'do piso retangular disponível para acomodar os ocupantes',
+    'Casquinha de sorvete': 'da superfície lateral disponível para uma cobertura de chocolate, sem fechar a abertura circular',
+    'Cobertura de um quiosque': 'das quatro faces triangulares disponíveis para instalação de telhas, sem incluir a base quadrada',
+    'Embalagem tetraédrica': 'das três faces disponíveis para decoração, excluindo a face usada como base',
+    'Bola decorativa': 'da superfície externa disponível para pintura',
+}
 PADRAO = dict(a='6', b='8', h='12', r='5', d='10', g='13',
               recipiente_a='30', recipiente_b='20', recipiente_r='15',
               recipiente_h='30', nivel='15', elevacao='1')
@@ -57,7 +74,12 @@ def grandezas(q):
     elif t=='Tetraedro': base=math.sqrt(3)*a*a/4; lateral=3*base; volume=a**3/(6*math.sqrt(2))
     else: base=0; lateral=4*math.pi*r*r; volume=4*math.pi*r**3/3
     total=lateral+base*(2 if t.startswith('Prisma') or t in ('Cubo','Cilindro') else 1)
-    return {'Volume':volume,'Área total':total,'Área lateral':lateral,
+    total_objeto=(base+lateral if q.cenario in ('Aquário sem tampa','Lixeira cilíndrica aberta','Canteiro elevado') else
+                  lateral if q.cenario in ('Casquinha de sorvete','Cobertura de um quiosque') else total)
+    disponivel=(base if q.cenario in ('Aquário sem tampa','Canteiro elevado') else
+                a*h if q.cenario=='Barraca de camping' else
+                lateral if q.cenario in ('Lixeira cilíndrica aberta','Lata com rótulo','Casquinha de sorvete','Cobertura de um quiosque','Embalagem tetraédrica') else total)
+    return {'Volume':volume,'Área total':total_objeto,'Área disponível':disponivel,'Área lateral':lateral,
             'Fundo e paredes':base+lateral,'Sem piso':total-a*h,'Três faces':lateral}
 
 
@@ -80,6 +102,7 @@ def imersao(q):
 def validar(q):
     if q.cenario!='Sem contexto' and q.cenario not in CENARIOS: raise ValueError('Escolha um contexto válido.')
     if type(q.incluir_imagem) is not bool: raise ValueError('Opção de imagem inválida.')
+    if type(q.mostrar_medidas) is not bool: raise ValueError('Opção de medidas na figura inválida.')
     if q.unidade not in ('cm','m'): raise ValueError('Use cm ou m.')
     if q.cenario=='Sem contexto': return
     tipo,_,objetivos=CENARIOS[q.cenario]
@@ -155,8 +178,18 @@ def enunciado(q):
       'Fundo e paredes':'Determine a área de material para cobrir o fundo e todas as paredes, sem tampa. Conte cada superfície apenas uma vez.',
       'Sem piso':'Determine a área de tecido para as duas faces triangulares e as duas faces inclinadas, sem incluir o piso.',
       'Três faces':'Uma face será usada como base. Determine a área das outras três faces que receberão decoração.',
+      'Área disponível':'Determine a área '+SUPERFICIES[q.cenario]+'.',
     }
-    if q.cenario=='Barraca de camping' and q.objetivo=='Área total': pedidos['Área total']='Determine a área total de tecido, incluindo o piso, as duas faces triangulares e as duas faces inclinadas.'
+    pedidos['Área total']={
+        'Aquário sem tampa':'Determine a área total de vidro: fundo e quatro paredes, sem tampa. Conte cada superfície apenas uma vez.',
+        'Lixeira cilíndrica aberta':'Determine a área total de chapa: fundo circular e superfície lateral, sem tampa. Conte cada superfície apenas uma vez.',
+        'Canteiro elevado':'Determine a área total de revestimento interno: fundo hexagonal e seis paredes, sem tampa.',
+        'Casquinha de sorvete':'Determine a área total de massa da casquinha, correspondente apenas à superfície lateral. Não inclua um disco na abertura.',
+        'Cobertura de um quiosque':'Determine a área total da cobertura: as quatro faces triangulares, sem incluir a base horizontal.',
+        'Barraca de camping':'Determine a área total de tecido, incluindo o piso, as duas faces triangulares e as duas faces inclinadas.',
+    }.get(q.cenario,pedidos['Área total'].replace('a área de toda','a área total de toda'))
+    pedidos['Volume e área total']=pedidos['Volume']+' '+pedidos['Área total']
+    pedidos['Volume e área disponível']=pedidos['Volume']+' '+pedidos['Área disponível']
     return texto+pedidos[q.objetivo]
 
 
@@ -167,8 +200,11 @@ def apoio(q):
         return (f'Volume da peça: {d["volume"]:.5g} {q.unidade}³ | Nível final: {d["final"]:.5g} {q.unidade}\n'
                 f'Transbordamento: {d["excesso"]:.5g} {q.unidade}³. Peça cabe e pode ficar totalmente submersa.')
     d=grandezas(q)
-    return f'Volume: {d["Volume"]:.5g} {q.unidade}³ | Área total do modelo fechado: {d["Área total"]:.5g} {q.unidade}²\n'+(
-        f'Resultado pedido (aproximado): {d[q.objetivo]:.5g} '+q.unidade+('³' if q.objetivo=='Volume' else '²') if q.cenario!='Sem contexto' else '')
+    resultado=''
+    if q.cenario!='Sem contexto':
+        alvo=q.objetivo.replace('Volume e área','Área')
+        resultado=f'Resultado de {alvo.lower()} (aproximado): {d[alvo]:.5g} '+q.unidade+('³' if alvo=='Volume' else '²')
+    return f'Volume: {d["Volume"]:.5g} {q.unidade}³ | Área total considerada: {d["Área total"]:.5g} {q.unidade}²\n'+resultado
 
 
 def imagem(q):
@@ -176,11 +212,81 @@ def imagem(q):
     return Path(__file__).resolve().parent/'assets'/'contextos_solidos'/(CENARIOS[q.cenario][1]+'.png')
 
 
+def anotacoes(q):
+    """Rótulos dos dados fornecidos; coordenadas na imagem, com y para baixo.
+
+    Não calcula medidas derivadas nem revela dimensões da peça no problema
+    inverso. Os níveis inicial/observado são notas, não cotas do nível desenhado.
+    """
+    from solidos import campos
+    if not imagem(q) or not q.mostrar_medidas: return []
+    posicoes={
+        'Caixa de embalagem': {'a':(.50,.87,.59,.72)},
+        'Aquário sem tampa': {'a':(.23,.09,.50,.44),'b':(.18,.54,.24,.41),'h':(.80,.09,.84,.29)},
+        'Lixeira cilíndrica aberta': {'r':(.24,.10,.50,.22),'d':(.24,.10,.50,.22),'h':(.84,.65,.69,.53)},
+        'Lata com rótulo': {'r':(.24,.10,.50,.22),'d':(.24,.10,.50,.22),'h':(.82,.65,.79,.52)},
+        'Canteiro elevado': {'a':(.46,.91,.49,.76),'h':(.83,.61,.79,.63)},
+        'Barraca de camping': {'a':(.24,.91,.31,.78),'h':(.75,.13,.71,.49)},
+        'Casquinha de sorvete': {'r':(.23,.13,.50,.21),'d':(.23,.13,.50,.21),'h':(.81,.46,.51,.52),'g':(.81,.65,.56,.63)},
+        'Cobertura de um quiosque': {'a':(.49,.48,.49,.38),'h':(.79,.09,.51,.25)},
+        'Embalagem tetraédrica': {'a':(.28,.86,.32,.75)},
+        'Bola decorativa': {'r':(.81,.32,.52,.43),'d':(.81,.32,.52,.43)},
+    }
+    campos_dados=campos(q.tipo,q.circular,q.cone)
+    if q.cenario in IMERSAO:
+        campos_dados=[] if q.objetivo=='Volume pela elevação' else campos_dados
+        campos_dados=campos_dados+campos_recipiente(q)
+        # Notas explicitamente identificadas; não confundem o nível inicial
+        # com o nível final ilustrativo, que pode ser a incógnita.
+        slots=[(.23,.09),(.77,.09),(.23,.88),(.77,.88),(.23,.34),(.77,.34)]
+        result=[]
+        for i,(key,label) in enumerate(campos_dados):
+            label={'a':'Aresta da peça','r':'Raio da peça','d':'Diâmetro da peça',
+                   'recipiente_a':'Compr. recipiente','recipiente_b':'Larg. recipiente',
+                   'recipiente_h':'Altura recipiente','recipiente_r':'Raio recipiente',
+                   'nivel':'Nível inicial','elevacao':'Elevação observada'}[key]
+            result.append((key,label,q.valores[key],slots[i],None))
+        return result
+    result=[]
+    for key,label in campos_dados:
+        if q.cenario=='Barraca de camping' and key=='h': label='Comprimento'
+        px,py,ax,ay=posicoes[q.cenario][key]
+        result.append((key,label,q.valores[key],(px,py),(ax,ay)))
+    return result
+
+
+def desenhar_anotacoes(pdf,q,rect):
+    from reportlab.platypus import Paragraph
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER
+    x,y,w,h=rect
+    style=ParagraphStyle('medida',fontName='Helvetica-Bold',fontSize=7,leading=8,alignment=TA_CENTER)
+    pdf.saveState(); pdf.setLineWidth(.6); pdf.setStrokeColorRGB(0,0,0)
+    for key,label,value,(px,py),anchor in anotacoes(q):
+        p=Paragraph(escape(label)+': '+texto_medida(value)+' '+q.unidade,style)
+        plain=label+': '+value.strip().replace('√','raiz de ')+' '+q.unidade
+        bw=min(100,w*.43,max(30,pdf.stringWidth(plain,'Helvetica-Bold',7)+2)); _,bh=p.wrap(bw,1000)
+        lx=min(max(x+px*w-bw/2,x+3),x+w-bw-3)
+        ly=min(max(y+(1-py)*h-bh/2,y+3),y+h-bh-3)
+        if anchor:
+            ax=x+anchor[0]*w; ay=y+(1-anchor[1])*h
+            pdf.line(lx+bw/2,ly+bh/2,ax,ay)
+            pdf.setFillColorRGB(0,0,0);pdf.circle(ax,ay,1,stroke=0,fill=1)
+        pdf.setFillColorRGB(1,1,1);pdf.roundRect(lx-2,ly-2,bw+4,bh+4,2,stroke=0,fill=1)
+        p.drawOn(pdf,lx,ly)
+    pdf.restoreState()
+
+
 def desenhar_imagem(pdf,q,rect):
     path=imagem(q)
     if path:
         x,y,w,h=rect
-        pdf.drawImage(str(path),x,y+12,width=w,height=max(1,h-12),preserveAspectRatio=True,anchor='c',mask='auto')
+        from PIL import Image
+        with Image.open(path) as im: iw,ih=im.size
+        scale=min(w/iw,max(1,h-12)/ih); dw,dh=iw*scale,ih*scale
+        image_rect=(x+(w-dw)/2,y+12+(h-12-dh)/2,dw,dh)
+        pdf.drawImage(str(path),*image_rect,mask='auto')
+        desenhar_anotacoes(pdf,q,image_rect)
         pdf.setFillColorRGB(.35,.35,.35); pdf.setFont('Helvetica',6)
         pdf.drawCentredString(x+w/2,y+3,'Ilustração sem escala; considere as medidas do enunciado.')
 

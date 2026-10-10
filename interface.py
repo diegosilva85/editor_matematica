@@ -432,10 +432,11 @@ class AbaSolidos(Aba):
         if not self.limpar(): return
         for i in range(self.total.get()):
             card=ttk.LabelFrame(self.corpo,text=f'Sólido {i+1}',padding=10); card.pack(fill='x',pady=6)
-            from contextos_solidos import CENARIOS, PADRAO, campos_recipiente, apoio, enunciado, imagem
+            from contextos_solidos import CENARIOS, PADRAO, campos_recipiente, apoio, enunciado, imagem, anotacoes
             r={'tipo':tk.StringVar(value='Cubo'),'circular':tk.StringVar(value='Raio'),'cone':tk.StringVar(value='Altura'),
                'cenario':tk.StringVar(value='Sem contexto'),'objetivo':tk.StringVar(value='Volume'),
                'incluir_imagem':tk.BooleanVar(value=True),'unidade':tk.StringVar(value='cm'),
+               'mostrar_medidas':tk.BooleanVar(value=False),
                'valores':{k:tk.StringVar(value=v) for k,v in PADRAO.items()}}
             self.registros.append(r)
             contexto=ttk.Frame(card); contexto.pack(fill='x',pady=4)
@@ -444,10 +445,13 @@ class AbaSolidos(Aba):
             contextos.pack(side='left',padx=6)
             opcoes=ttk.Frame(card); opcoes.pack(fill='x',pady=4)
             ttk.Label(opcoes,text='Perguntar:').pack(side='left')
-            perguntas=ttk.Combobox(opcoes,textvariable=r['objetivo'],state='readonly',width=24)
+            perguntas=ttk.Combobox(opcoes,textvariable=r['objetivo'],state='readonly',width=29)
             perguntas.pack(side='left',padx=6)
-            incluir=ttk.Checkbutton(opcoes,text='Incluir imagem',variable=r['incluir_imagem'],command=lambda r=r:r['atualizar']())
+            imagens=ttk.Frame(card); imagens.pack(fill='x',pady=3)
+            incluir=ttk.Checkbutton(imagens,text='Incluir imagem',variable=r['incluir_imagem'],command=lambda r=r:r['atualizar']())
             incluir.pack(side='left')
+            marcar=ttk.Checkbutton(imagens,text='Mostrar medidas dadas na figura',variable=r['mostrar_medidas'],command=lambda r=r:r['atualizar']())
+            marcar.pack(side='left',padx=12)
             row=ttk.Frame(card); row.pack(fill='x')
             ttk.Label(row,text='Sólido:').pack(side='left')
             seletor=ttk.Combobox(row,textvariable=r['tipo'],values=TIPOS,state='readonly',width=30); seletor.pack(side='left',padx=8)
@@ -461,18 +465,31 @@ class AbaSolidos(Aba):
             ajuda=ttk.Label(suporte,wraplength=largura_texto,justify='left'); ajuda.pack(anchor='w',pady=6)
             def modelo(r=r):
                 return Solido(r['tipo'].get(),{k:v.get() for k,v in r['valores'].items()},r['circular'].get(),r['cone'].get(),
-                              **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade')})
-            def atualizar_apoio(*args,r=r,texto=texto,ajuda=ajuda,modelo=modelo):
+                              **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade','mostrar_medidas')})
+            def atualizar_apoio(*args,r=r,texto=texto,ajuda=ajuda,modelo=modelo,preview=preview):
+                preview.delete('medidas')
                 try:
                     q=modelo(); ajuda.configure(text=apoio(q),foreground='#166534')
                     from html import unescape
                     texto.configure(text=unescape(enunciado(q)) if q.cenario!='Sem contexto' else 'Determine o volume e a área total de cada sólido.')
+                    if hasattr(preview,'_rect'):
+                        x,y,w,h=preview._rect
+                        for key,label,value,(px,py),anchor in anotacoes(q):
+                            if anchor: preview.create_line(x+px*w,y+py*h,x+anchor[0]*w,y+anchor[1]*h,fill='black',tags='medidas')
+                            text_id=preview.create_text(x+px*w,y+py*h,text=f'{label}: {value} {q.unidade}',width=w*.43,font=('TkDefaultFont',7),tags='medidas')
+                            bounds=preview.bbox(text_id)
+                            dx=max(x+3-bounds[0],min(0,x+w-3-bounds[2]))
+                            dy=max(y+3-bounds[1],min(0,y+h-3-bounds[3]))
+                            preview.move(text_id,dx,dy);bounds=preview.bbox(text_id)
+                            box=preview.create_rectangle(bounds[0]-2,bounds[1]-2,bounds[2]+2,bounds[3]+2,fill='white',outline='',tags='medidas')
+                            preview.tag_lower(box,text_id)
                 except (ValueError,KeyError,OverflowError) as e:
                     ajuda.configure(text='Confira: '+str(e),foreground='#a33'); texto.configure(text='Ajuste as medidas para visualizar o enunciado.')
-            def atualizar(event=None,r=r,preview=preview,editor=editor,seletor=seletor,perguntas=perguntas,incluir=incluir,modelo=modelo,atualizar_apoio=atualizar_apoio):
+            def atualizar(event=None,r=r,preview=preview,editor=editor,seletor=seletor,perguntas=perguntas,incluir=incluir,marcar=marcar,modelo=modelo,atualizar_apoio=atualizar_apoio):
                 for child in editor.winfo_children(): child.destroy()
                 contextual=r['cenario'].get()!='Sem contexto'
                 incluir.configure(state='normal' if contextual else 'disabled')
+                marcar.configure(state='normal' if contextual and r['incluir_imagem'].get() else 'disabled')
                 if contextual:
                     tipo,_,opcoes=CENARIOS[r['cenario'].get()]
                     r['tipo'].set(tipo); seletor.configure(state='disabled')
@@ -507,14 +524,16 @@ class AbaSolidos(Aba):
                        'Pirâmide de base quadrada':'Pirâmide reta: altura perpendicular ao centro da base.', 'Tetraedro':'Tetraedro regular: todas as arestas iguais.'}
                 ttk.Label(editor,text=notes.get(tipo,'')+'\nAceita 5, 2√3, √3/3 ou 3/2.',wraplength=480).pack(anchor='w',pady=5)
                 preview.delete('all')
+                preview.configure(width=240 if contextual else 190,height=200 if contextual else 175)
                 if contextual:
                     path=imagem(modelo())
                     if path:
                         from PIL import Image, ImageTk
                         with Image.open(path) as im:
-                            im.thumbnail((190,165)); preview._imagem=ImageTk.PhotoImage(im.copy())
-                        preview.create_image(95,85,image=preview._imagem)
-                    else: preview.create_text(95,80,text='Sem imagem no PDF',width=170)
+                            im.thumbnail((230,188)); preview._imagem=ImageTk.PhotoImage(im.copy())
+                            preview._rect=(120-im.width/2,100-im.height/2,im.width,im.height)
+                        preview.create_image(120,100,image=preview._imagem)
+                    else: preview.create_text(120,100,text='Sem imagem no PDF',width=210)
                     atualizar_apoio()
                     return
                 lines,labels=desenho(tipo,r['circular'].get(),r['cone'].get())
@@ -532,7 +551,7 @@ class AbaSolidos(Aba):
         for i,r in enumerate(self.registros):
             try:
                 s=Solido(r['tipo'].get(),{k:v.get() for k,v in r['valores'].items()},r['circular'].get(),r['cone'].get(),
-                         **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade')})
+                         **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade','mostrar_medidas')})
                 s.validar(); items.append(s)
             except ValueError as e: raise ValueError(f'Sólido {i+1}: {e}')
         return 4,items,self.colunas.get(),self.titulo.get()

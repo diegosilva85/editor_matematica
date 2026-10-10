@@ -22,6 +22,17 @@ Em cada cartão, escolha um **Contexto**, o que deseja perguntar e a unidade
 (cm ou m). A opção **Sem contexto** mantém os desenhos geométricos anteriores.
 Marque ou desmarque **Incluir imagem**: todas as medidas necessárias continuam
 no enunciado. A imagem é ilustrativa, sem escala e sem respostas.
+**Mostrar medidas dadas na figura** acrescenta rótulos atualizados à ilustração,
+também na prévia e em Criar Lista. A opção é salva no JSON e vem desmarcada em
+arquivos antigos. No problema inverso de imersão, não revela medidas da peça:
+somente as do recipiente, o nível inicial e a elevação fornecida.
+
+O campo **Perguntar** também oferece **Área total**, **Área disponível**,
+**Volume e área total** e **Volume e área disponível**, nos dez contextos de
+áreas/volumes. A superfície é explicitada no enunciado: piso da barraca,
+fundo do aquário, região de plantio, rótulo, pintura, telhas ou decoração.
+Nos objetos abertos, a área total considera apenas as superfícies existentes,
+sem acrescentar uma tampa ou base inexistente.
 
 Há 12 cenários, cada um com geometria definida para corresponder à ilustração:
 caixa cúbica, aquário retangular sem tampa, lixeira cilíndrica aberta, lata com

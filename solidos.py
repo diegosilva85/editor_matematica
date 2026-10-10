@@ -28,6 +28,7 @@ class Solido:
     objetivo: str = 'Volume'
     incluir_imagem: bool = True
     unidade: str = 'cm'
+    mostrar_medidas: bool = False
 
     def validar(self):
         if self.tipo not in TIPOS: raise ValueError('Escolha um sólido.')
