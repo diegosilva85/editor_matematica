@@ -272,6 +272,9 @@ def salvar_documento(destino,paginas):
             elif grau==6:
                 from progressao import desenhar_pagina as desenhar_pa
                 desenhar_pa(pdf,funcoes,colunas,titulo)
+            elif grau==7:
+                from estatistica import desenhar_pagina as desenhar_estatistica
+                desenhar_estatistica(pdf,funcoes,colunas,titulo)
             else: raise ValueError('Tipo de página desconhecido.')
         pdf.setTitle('Gráficos de funções')
         pdf.save()

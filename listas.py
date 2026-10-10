@@ -11,7 +11,7 @@ from documentos import validar_documento, FORMATO as FORMATO_ABAS, publicar_par
 
 FORMATO='lista-de-exercicios'
 CONTEUDOS={1:'Função de primeiro grau',2:'Função de segundo grau',3:'Trigonometria',
-           4:'Geometria espacial',5:'Função exponencial',6:'Progressão aritmética'}
+           4:'Geometria espacial',5:'Função exponencial',6:'Progressão aritmética',7:'Estatística'}
 
 
 @dataclass
@@ -63,7 +63,7 @@ def carregar_lista(path):
 
 def texto_questao(grau,item):
     if grau==2 and item.apresentacao=='Expressão da função': return item.enunciado()
-    if grau==6: return item.enunciado()
+    if grau in (6,7): return item.enunciado()
     if grau==3 and item.apresentacao=='Contextual':
         from contextos import enunciado
         return escape(enunciado(item))
@@ -88,7 +88,8 @@ def planejar(lista):
     """Linhas de altura uniforme, sem dividir questões ou ultrapassar 12/página."""
     from reportlab.lib.pagesizes import A4
     expressoes=any(grau==2 and item.apresentacao=='Expressão da função' for grau,item in lista.itens)
-    cols=min(lista.colunas,2) if expressoes else lista.colunas
+    tabelas=any(grau==7 for grau,item in lista.itens)
+    cols=min(lista.colunas,2) if expressoes or tabelas else lista.colunas
     limit=min(lista.por_pagina,4) if expressoes else lista.por_pagina
     W,H=A4; gap=12; width=(W-60-gap*(cols-1))/cols
     pages=[]; page=[]; top=H-78; count=0; index=0
@@ -103,6 +104,10 @@ def planejar(lista):
                 from contextos_quadraticas import imagem
                 textual=not bool(imagem(item))
             graphic=0 if textual else (145 if cols==3 else 185 if cols==2 else 235)
+            if grau==7:
+                from estatistica import tabela
+                _,graphic=tabela(item,width-20).wrap(width-20,10000)
+                graphic+=12
             height=max(100,text_height+graphic+30)
             row.append((index+offset,width,height,text_height,graphic))
         height=max(x[2] for x in row)
@@ -136,6 +141,12 @@ class CanvasQuestao:
 
 
 def desenhar_item(pdf,grau,item,rect):
+    if grau==7:
+        from estatistica import tabela
+        x,y,w,h=rect
+        t=tabela(item,w-10);_,th=t.wrap(w-10,10000)
+        t.drawOn(pdf,x+5,y+h-th)
+        return
     if grau==2 and item.apresentacao=='Expressão da função':
         from contextos_quadraticas import desenhar_imagem
         desenhar_imagem(pdf,item,rect)

@@ -244,3 +244,34 @@ A separação funciona também no editor de listas e é recuperada do cenário
 e da pergunta salvos no JSON. Questões antigas permanecem legíveis sem alterar
 seu enunciado; um contexto antigo de raízes aparece apenas quando já fazia
 parte do documento carregado, não entre as opções para novas questões.
+
+### Estatística
+
+A sétima aba cria tabelas **Simples** (identificação + medida numérica) ou de
+**Frequência** (valor numérico + número de repetições). Escolha de 2 a 20 linhas,
+edite as células e marque média, moda e/ou mediana. Na tabela de frequência,
+valores devem ser distintos e frequências são inteiros positivos. O cálculo é
+ponderado, sem expandir tabelas grandes. Empates na frequência máxima geram
+múltiplas modas; quando todos os valores distintos têm a mesma frequência,
+adotamos a convenção escolar de tabela amodal. Uma tabela constante tem moda.
+
+Dez contextos estão disponíveis em ambos os tipos: notas de alunos, salários,
+glicose em amostras fictícias, compras no mês, hábitos musicais, livros lidos,
+temperaturas, tempo de deslocamento, produção de peças e consumo de água.
+O contexto musical usa horas de escuta, pois média e mediana não se aplicam
+a nomes de gêneros musicais. Dados de sangue não têm interpretação clínica.
+
+**Gerar valores** aceita metas opcionais de média, moda única e mediana.
+Deixe em branco as metas livres; ajuste mínimo, máximo e passo (1 = inteiros,
+0,1 = décimos). Na simples, o total de observações é a quantidade de linhas.
+Na frequência, escolha também o total de observações, entre o número de linhas
+e 200. A busca é aleatória e limitada: só substitui a tabela se todas as metas
+forem satisfeitas exatamente. Falha na busca não é prova de impossibilidade;
+o aviso orienta a ajustar as restrições, preservando a tabela anterior.
+
+O apoio mostra média, mediana, todas as modas, total de observações e quais metas
+foram atingidas. Não sai no PDF. No editor de listas fica abaixo do formulário.
+Tabelas e configurações são preservadas no JSON. As tabelas usam até duas colunas
+de questões, com altura calculada pelo conteúdo e novas páginas automáticas.
+A aba aceita até 12 questões por documento, distribuídas em até quatro por folha
+(menos quando a altura das tabelas exigir).

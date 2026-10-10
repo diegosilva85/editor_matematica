@@ -7,7 +7,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 FORMATO='criador-de-graficos'
-LIMITES={1:(15,3),2:(10,2),3:(15,3),4:(12,3),5:(8,2),6:(12,2)}
+LIMITES={1:(15,3),2:(10,2),3:(15,3),4:(12,3),5:(8,2),6:(12,2),7:(12,2)}
 
 
 def dados_documento(paginas):
@@ -23,15 +23,16 @@ def validar_documento(dados):
     from solidos import Solido
     from exponenciais import Exponencial
     from progressao import Progressao
-    classes={1:Funcao,2:Parabola,3:Triangulo,4:Solido,5:Exponencial,6:Progressao}
+    from estatistica import Estatistica
+    classes={1:Funcao,2:Parabola,3:Triangulo,4:Solido,5:Exponencial,6:Progressao,7:Estatistica}
     def numero(v):
         return type(v) in (int,float) and math.isfinite(v)
     try:
         if not isinstance(dados,dict) or dados.get('formato')!=FORMATO or type(dados.get('versao')) is not int or dados['versao']!=1:
             raise ValueError('Formato ou versão de JSON não suportado.')
         pages=dados['paginas']
-        if not isinstance(pages,list) or not 1<=len(pages)<=6:
-            raise ValueError('O documento deve conter de 1 a 6 abas.')
+        if not isinstance(pages,list) or not 1<=len(pages)<=7:
+            raise ValueError('O documento deve conter de 1 a 7 abas.')
         usados=set(); result=[]
         for page in pages:
             grau=page['aba']; cols=page['colunas']; titulo=page['titulo']; items=page['itens']
@@ -46,11 +47,14 @@ def validar_documento(dados):
             for item in items:
                 if not isinstance(item,dict): raise ValueError('Item inválido.')
                 for k,v in item.items():
-                    if k=='xs':
+                    if k=='linhas' and grau==7:
+                        if not isinstance(v,list) or not 2<=len(v)<=20 or not all(isinstance(row,list) and len(row)==2 and all(isinstance(s,str) and len(s)<=80 for s in row) for row in v):
+                            raise ValueError('Tabela inválida: use de 2 a 20 linhas com duas células cada.')
+                    elif k=='xs':
                         if not isinstance(v,list) or len(v)>8 or not all(numero(x) for x in v): raise ValueError('Lista de pontos inválida.')
                     elif k=='valores':
                         if not isinstance(v,dict) or not all(isinstance(key,str) and isinstance(val,str) and len(val)<=40 for key,val in v.items()): raise ValueError('Medidas inválidas.')
-                    elif k in ('raizes','intercepto','marcar_xv','marcar_yv','pedir_raizes','pedir_vertice','incluir_imagem'):
+                    elif k in ('raizes','intercepto','marcar_xv','marcar_yv','pedir_raizes','pedir_vertice','incluir_imagem','pedir_media','pedir_moda','pedir_mediana'):
                         if type(v) is not bool: raise ValueError('Opção de marcação inválida.')
                     elif k in ('a','b','c','angulo') and grau!=5:
                         if not numero(v): raise ValueError('Coeficiente ou ângulo inválido.')

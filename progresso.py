@@ -13,15 +13,15 @@ def executar_tarefa(tarefa, fila):
         fila.put((False,exc))
 
 
-def gerar_com_progresso(parent,tarefa):
+def gerar_com_progresso(parent,tarefa,titulo='Gerando PDF',mensagem='Criando o PDF…'):
     """Espera com event loop ativo e devolve o resultado (ou relança o erro)."""
     dialog=tk.Toplevel(parent)
-    dialog.title('Gerando PDF')
+    dialog.title(titulo)
     dialog.transient(parent)
     dialog.resizable(False,False)
     body=ttk.Frame(dialog,padding=24); body.pack(fill='both',expand=True)
-    ttk.Label(body,text='Criando o PDF…',font=('',12,'bold')).pack(anchor='w')
-    ttk.Label(body,text='Aguarde a preparação das questões, imagens e arquivos.',wraplength=390).pack(anchor='w',pady=(8,14))
+    ttk.Label(body,text=mensagem,font=('',12,'bold')).pack(anchor='w')
+    ttk.Label(body,text='Aguarde a conclusão do processamento.',wraplength=390).pack(anchor='w',pady=(8,14))
     barra=ttk.Progressbar(body,mode='indeterminate',length=390)
     barra.pack(fill='x')
     ttk.Label(body,text='Esta janela fecha automaticamente ao concluir.',wraplength=390).pack(anchor='w',pady=(12,0))

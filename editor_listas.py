@@ -140,6 +140,8 @@ class EditorLista:
             self.status.set(f'{len(self.lista.itens)} questões. A prévia usa a mesma diagramação do PDF salvo.')
             if any(g==2 and q.apresentacao=='Expressão da função' for g,q in self.lista.itens):
                 self.status.set(f'{len(self.lista.itens)} questões. Com expressões quadráticas: máximo de 2 por linha e 4 por página.')
+            elif any(g==7 for g,q in self.lista.itens):
+                self.status.set(f'{len(self.lista.itens)} questões. Tabelas de estatística: até 2 por linha, com altura e paginação automáticas.')
         except (ValueError,OverflowError,OSError,tk.TclError) as e:
             self.preview.limpar('Corrija os dados para visualizar.'); self.status.set(str(e))
 
@@ -234,10 +236,11 @@ class QuestaoDialog:
 
     def montar(self,item=None):
         from interface import Aba,AbaTriangulos,AbaSolidos,AbaExponenciais,AbaProgressao
+        from interface_estatistica import AbaEstatistica
         for child in self.form.winfo_children(): child.destroy()
         notebook=ttk.Notebook(self.form); notebook.pack(fill='both',expand=True)
         grau=next(k for k,v in CONTEUDOS.items() if v==self.content.get())
-        self.aba=Aba(notebook,grau) if grau in (1,2) else {3:AbaTriangulos,4:AbaSolidos,5:AbaExponenciais,6:AbaProgressao}[grau](notebook)
+        self.aba=Aba(notebook,grau) if grau in (1,2) else {3:AbaTriangulos,4:AbaSolidos,5:AbaExponenciais,6:AbaProgressao,7:AbaEstatistica}[grau](notebook)
         self.aba.apoio_embaixo=True
         if item is not None: self.aba.restaurar((grau,[item],1,''))
         else: self.aba.total.set(1); self.aba.criar()
