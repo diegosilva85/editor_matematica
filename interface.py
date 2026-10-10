@@ -98,6 +98,7 @@ class Aba:
                 ttk.Label(presentation,text='Apresentação:').pack(side='left')
                 select=ttk.Combobox(presentation,textvariable=reg['apresentacao'],values=('Gráfico','Expressão da função'),state='readonly',width=25)
                 select.pack(side='left',padx=8)
+                ttk.Label(card,text='Coeficientes e raízes: -1/2, 0,5, √2, 2√3/3 ou sqrt(2).',wraplength=700).pack(fill='x',pady=6)
                 pedidos=ttk.Frame(card)
                 ttk.Label(pedidos,text='Pedir para calcular:').pack(side='left',padx=(0,10))
                 for key,label in [('pedir_raizes','Raízes reais'),('pedir_vertice','Coordenadas do vértice')]:
@@ -135,7 +136,9 @@ class Aba:
         self.criar()
         for reg,item in zip(self.registros,items):
             for key,value in asdict(item).items():
-                if key=='xs':
+                if self.grau==2 and key in ('a_texto','b_texto','c_texto'):
+                    if value: reg[key[0]].set(value)
+                elif key=='xs':
                     reg['_quantidade_pontos'].set(len(value)); reg['_atualizar_pontos']()
                     for var,x in zip(reg['xs'],value): var.set(str(x))
                 elif key=='valores':
@@ -152,13 +155,16 @@ class Aba:
         funcoes=[]
         for i,r in enumerate(self.registros):
             try:
-                a=numero(r['a'].get())
-                b=0 if self.grau==2 and r['modo'].get()=='Raízes e a' else numero(r['b'].get())
+                from numeros_exatos import ler
+                parse=(lambda text:ler(text)[1]) if self.grau==2 else numero
+                a=parse(r['a'].get())
+                b=0 if self.grau==2 and r['modo'].get()=='Raízes e a' else parse(r['b'].get())
                 if self.grau==1:
                     f=Funcao(a,b,[numero(v.get()) for v in r['xs']]); f.validar()
                 else:
-                    c=0 if r['modo'].get()=='Raízes e a' else numero(r['c'].get())
+                    c=0 if r['modo'].get()=='Raízes e a' else parse(r['c'].get())
                     f=Parabola(a,b,c,*[r[k].get() for k in ('raizes','intercepto','marcar_xv','marcar_yv')],
+                               **{k+'_texto':r[k].get() for k in ('a','b','c')},
                                **{k:r[k].get() for k in ('modo','quantidade_raizes','raiz1','raiz2','apresentacao','pedir_raizes','pedir_vertice')}); f.dados()
                 funcoes.append(f)
             except ValueError as e:

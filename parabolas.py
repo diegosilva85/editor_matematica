@@ -1,5 +1,6 @@
 """Cálculo e desenho de parábolas; exportação das duas páginas."""
 import math
+import re
 import os
 import tempfile
 from dataclasses import dataclass
@@ -24,8 +25,16 @@ class Parabola:
     apresentacao: str = 'Gráfico'
     pedir_raizes: bool = True
     pedir_vertice: bool = True
+    a_texto: str = ''
+    b_texto: str = ''
+    c_texto: str = ''
 
     def dados(self):
+        from numeros_exatos import ler
+        for key in ('a','b','c'):
+            text=getattr(self,key+'_texto')
+            if text and (key=='a' or self.modo=='Coeficientes'):
+                setattr(self,key,ler(text)[1])
         if self.apresentacao not in ('Gráfico','Expressão da função'):
             raise ValueError('Escolha gráfico ou expressão da função.')
         if type(self.pedir_raizes) is not bool or type(self.pedir_vertice) is not bool:
@@ -35,11 +44,10 @@ class Parabola:
         if self.modo not in ('Coeficientes','Raízes e a'):
             raise ValueError('Escolha o modo de entrada da parábola.')
         if self.modo=='Raízes e a':
-            from app_graficos import numero
             if self.quantidade_raizes not in ('1','2'):
                 raise ValueError('Escolha uma ou duas raízes.')
-            r1=numero(self.raiz1)
-            r2=r1 if self.quantidade_raizes=='1' else numero(self.raiz2)
+            r1=ler(self.raiz1)[1]
+            r2=r1 if self.quantidade_raizes=='1' else ler(self.raiz2)[1]
             self.b=-self.a*(r1+r2)
             self.c=self.a*r1*r2
         if not all(math.isfinite(v) for v in (self.a,self.b,self.c)) or self.a == 0:
@@ -65,25 +73,39 @@ class Parabola:
         return xv,yv,roots
 
     def expressao(self):
-        from fractions import Fraction
+        from numeros_exatos import ler,rotulo
+        import sympy as sp
         from decimal import Decimal, localcontext
-        from app_graficos import numero
         self.dados()
-        a,b,c=(Fraction(str(v)) for v in (self.a,self.b,self.c))
+        a,b,c=(ler(getattr(self,k+'_texto'))[0] if getattr(self,k+'_texto') and (k=='a' or self.modo=='Coeficientes')
+               else sp.Rational(str(getattr(self,k))) for k in ('a','b','c'))
         if self.modo=='Raízes e a':
-            r1=Fraction(str(numero(self.raiz1)))
-            r2=r1 if self.quantidade_raizes=='1' else Fraction(str(numero(self.raiz2)))
-            b=-a*(r1+r2); c=a*r1*r2
+            r1=ler(self.raiz1)[0]
+            r2=r1 if self.quantidade_raizes=='1' else ler(self.raiz2)[0]
+            b=sp.simplify(-a*(r1+r2)); c=sp.simplify(a*r1*r2)
         def formatar(v):
+            if not v.is_Rational: return rotulo(v)
+            den=int(v.q)
+            for prime in (2,5):
+                while den%prime==0: den//=prime
+            if den!=1: return rotulo(v)
             with localcontext() as ctx:
                 ctx.prec=1000
-                text=format(Decimal(v.numerator)/Decimal(v.denominator),'f')
+                text=format(Decimal(int(v.p))/Decimal(int(v.q)),'f')
             if '.' in text: text=text.rstrip('0').rstrip('.')
             return text.replace('.',',')
         parts=[]
-        for value,term in ((a,'x²'),(b,'x'),(c,'')):
+        for key,value,term in (('a',a,'x²'),('b',b,'x'),('c',c,'')):
             if not value: continue
             magnitude='' if term and abs(value)==1 else formatar(abs(value))
+            raw=getattr(self,key+'_texto')
+            if raw and (key=='a' or self.modo=='Coeficientes') and magnitude:
+                magnitude=raw.strip().lstrip('+-').replace(' ','')
+                # A negative denominator is normalized so the outer sign remains correct.
+                if '/-' in magnitude: magnitude=rotulo(abs(value))
+                magnitude=re.sub(r'sqrt\(([^)]+)\)',r'√(\1)',magnitude)
+            if term and magnitude and any(ch in magnitude for ch in ('/','√','+','-')):
+                magnitude='('+magnitude+')'
             sign=('-' if value<0 else '') if not parts else (' - ' if value<0 else ' + ')
             parts.append(sign+magnitude+term)
         return 'f(x) = '+''.join(parts)

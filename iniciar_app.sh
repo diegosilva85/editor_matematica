@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 cd -- "$(dirname -- "$0")"
+if [ -x ".venv/bin/python" ]; then
+    exec .venv/bin/python app_graficos.py
+fi
 RUNTIME_PYTHON="/home/diego/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3"
 if [ -x "$RUNTIME_PYTHON" ]; then
     exec "$RUNTIME_PYTHON" app_graficos.py

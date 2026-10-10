@@ -146,6 +146,11 @@ gráfico, exibindo `f(x) = ax² + bx + c`. Marque **Raízes reais** e/ou
 aceitando coeficientes ou raízes e coeficiente a (uma raiz significa raiz dupla).
 O modo também está disponível no editor de listas e é preservado no JSON.
 Documentos antigos continuam abrindo no modo gráfico.
+Coeficientes e raízes aceitam frações, decimais com vírgula e radicais:
+`-1/2`, `0,5`, `√2`, `2√3/3`, `1/√2` e `sqrt(2)`. No modo por raízes,
+a expressão expandida mantém valores exatos. A notação digitada nos coeficientes
+é preservada. Atualize as dependências para instalar o cálculo simbólico:
+`python -m pip install -r requirements.txt`.
 
 Clique em **Criar Lista**, fora das abas, para abrir **Nova Lista de Exercícios**.
 As abas tradicionais continuam funcionando de forma independente.
