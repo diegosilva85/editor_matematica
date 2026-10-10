@@ -1,6 +1,31 @@
 # Criador de gráficos — retas, parábolas, triângulos e sólidos
 
-## Salvar e reabrir documentos
+## Editor de provas
+
+Na tela inicial, **Criar nova prova** abre o editor em tela maximizada, com
+os mesmos conteúdos e formulários de **Criar Lista**. Acrescente, edite,
+remova ou reordene as questões pelas setas. O enunciado pode acompanhar o
+modelo automaticamente ou ser personalizado livremente; as cinco alternativas
+**a–e** são editáveis. Depois de personalizar, alterações nas medidas não
+reescrevem seu texto: use **Copiar texto atualizado do modelo** se desejar.
+
+O PDF tem sempre quatro páginas A4 verticais: identificação e cartão-resposta;
+questões 1–4; questões 5–8; questões 9–10 e mensagem final. Escola, professor,
+título, número entre chaves e mensagem são configuráveis. O cartão tem dez
+colunas e cinco linhas de bolhas, com quatro marcas em L fixas. As marcas
+estão reservadas para uma futura leitura por câmera, ainda não implementada.
+
+A prévia permite conferir o resultado. Questões que não cabem no quadro
+geram um aviso: reduza o texto, as alternativas, a tabela ou uma imagem
+opcional. Nenhum conteúdo é cortado para forçar o encaixe. A exportação exige
+dez questões com todas as alternativas preenchidas e salva **PDF + JSON**
+com barra de progresso. **Salvar rascunho JSON** permite guardar uma prova
+incompleta. Reabra pelo **Carregar JSON** do editor de provas.
+
+Para reproduzir a impressão das fotos, selecione **duas páginas por folha**
+no visualizador de PDF; o arquivo não é gerado em orientação horizontal.
+
+## Documentos das abas
 
 Todo PDF gerado tem um JSON acompanhante no mesmo diretório e com o mesmo nome: `atividade.pdf` e `atividade.json`. Isso inclui as visualizações temporárias e a exportação direta de exemplo. O JSON contém somente as páginas incluídas naquele PDF, com títulos, colunas, coeficientes, pontos, opções de marcação, posições e medidas.
 

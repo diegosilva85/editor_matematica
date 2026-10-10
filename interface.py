@@ -764,7 +764,10 @@ def iniciar():
     style=ttk.Style(root); style.theme_use('clam'); style.configure('TButton',padding=8)
     ttk.Label(root,text='Criador de gráficos',font=('',20,'bold'),padding=14).pack(anchor='w')
     from editor_listas import EditorLista
-    ttk.Button(root,text='Criar Lista',command=lambda:EditorLista(root)).pack(anchor='w',padx=14,pady=(0,8))
+    from editor_provas import EditorProva
+    editores=ttk.Frame(root);editores.pack(anchor='w',padx=14,pady=(0,8))
+    ttk.Button(editores,text='Criar Lista',command=lambda:EditorLista(root)).pack(side='left')
+    ttk.Button(editores,text='Criar nova prova',command=lambda:EditorProva(root)).pack(side='left',padx=8)
     notebook=ttk.Notebook(root); notebook.pack(fill='both',expand=True,padx=12)
     from interface_estatistica import AbaEstatistica
     from interface_plana import AbaPlana

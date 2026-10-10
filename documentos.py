@@ -85,6 +85,9 @@ def publicar_par(pdf_temporario,destino,paginas,*,dados_prontos=None):
     if destino==json_path: raise ValueError('O destino do PDF deve ter extensão .pdf.')
     dados=dados_documento(paginas) if dados_prontos is None else dados_prontos
     if dados_prontos is None: validar_documento(dados)
+    elif dados.get('formato')=='prova-de-matematica':
+        from provas import validar_prova
+        validar_prova(dados,completa=True)
     else:
         from listas import validar_lista
         validar_lista(dados)

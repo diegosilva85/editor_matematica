@@ -84,7 +84,7 @@ class EditorLista:
         maximizar(self.window)
         self.lista=Lista(); self.dirty=False; self.pending=None
         self.window.protocol('WM_DELETE_WINDOW',self.fechar)
-        config=ttk.Frame(self.window,padding=10); config.pack(fill='x')
+        config=ttk.Frame(self.window,padding=10); config.pack(fill='x'); self.config=config
         ttk.Label(config,text='Título:').pack(side='left')
         self.title=tk.StringVar(value=self.lista.titulo)
         ttk.Entry(config,textvariable=self.title,width=35).pack(side='left',padx=8)
