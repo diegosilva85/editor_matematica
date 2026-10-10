@@ -198,3 +198,16 @@ no editor de listas e em sua prévia. Na aba tradicional, prefira até quatro
 questões por página quando houver imagens; se o conteúdo não couber, o app
 pede menos questões ou uma coluna, sem cortar o texto. No editor de listas,
 a paginação se ajusta automaticamente.
+
+Nas questões de expressão, o painel **Apoio ao professor**, à direita de cada
+questão, calcula raízes reais e vértice enquanto os campos são editados. Mostra
+resultados numéricos e orientações específicas ao contexto, sem incluir respostas
+no PDF. Entradas incompletas exibem aviso no próprio painel, sem interromper a
+digitação. Os cálculos continuam disponíveis mesmo se o contexto exigir ajustes.
+
+Para o cabo acima do solo, use coeficientes com a > 0 e mínimo positivo (por
+exemplo, a=1, b=-6, c=13). Não há raízes reais nessa situação, portanto o modo
+**Raízes e a** não se aplica. A orientação explica isso antes da exportação.
+
+A janela principal, o editor de listas e o formulário de questões abrem
+maximizados, mantendo os controles de minimizar, restaurar e fechar.

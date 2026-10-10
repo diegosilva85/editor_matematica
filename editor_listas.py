@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from pathlib import Path
 from listas import Lista, CONTEUDOS, pdf_lista, salvar_lista, carregar_lista, planejar
+from janelas import maximizar
 
 
 class Previa(ttk.Frame):
@@ -80,6 +81,7 @@ class EditorLista:
     def __init__(self,parent):
         self.window=tk.Toplevel(parent); self.window.title('Nova Lista de Exercícios')
         self.window.geometry('1250x850'); self.window.minsize(850,600)
+        maximizar(self.window)
         self.lista=Lista(); self.dirty=False; self.pending=None
         self.window.protocol('WM_DELETE_WINDOW',self.fechar)
         config=ttk.Frame(self.window,padding=10); config.pack(fill='x')
@@ -196,6 +198,7 @@ class QuestaoDialog:
         self.editor=editor; self.index=index; self.aba=None; self.timer=None; self.last=None
         self.window=tk.Toplevel(editor.window); self.window.title('Editar questão' if index is not None else 'Acrescentar questão')
         self.window.geometry('1450x900'); self.window.minsize(1000,650)
+        maximizar(self.window)
         self.window.transient(editor.window); self.window.grab_set(); self.window.protocol('WM_DELETE_WINDOW',self.fechar)
         top=ttk.Frame(self.window,padding=10); top.pack(fill='x')
         ttk.Label(top,text='Conteúdo:').pack(side='left')
@@ -228,6 +231,7 @@ class QuestaoDialog:
         def ajustar_textos(event=None):
             width=max(180,self.aba.corpo.winfo_width()-70)
             def visit(widget):
+                if getattr(widget,'_largura_fixa',False): return
                 if isinstance(widget,ttk.Label) and int(widget.cget('wraplength') or 0)>0:
                     widget.configure(wraplength=width)
                 for child in widget.winfo_children(): visit(child)

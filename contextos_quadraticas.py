@@ -12,6 +12,28 @@ IMAGENS = {'Chute do goleiro': 'chute_goleiro-v2.png', 'Saque de vôlei': 'saque
            'Jato de água': 'jato_agua.png', 'Cabo suspenso': 'cabo_suspenso.png'}
 
 
+def orientacao(cenario):
+    if cenario=='Sem contexto':
+        return 'Use a diferente de zero. Você pode informar coeficientes ou uma raiz dupla / duas raízes reais.'
+    if cenario=='Cabo suspenso':
+        return ('Cabo acima do solo: a > 0, xv ≥ 0 e yv > 0. Isso exige Δ < 0: não há raízes reais. '
+                'Use Coeficientes, não Raízes e a. Exemplo: a = 1, b = -6, c = 13 → V = (3; 4). '
+                'Com duas raízes reais o ponto mais baixo fica no solo ou abaixo dele; por isso esse modo não serve a este cenário.')
+    if cenario=='Temperatura de uma câmara fria':
+        return ('Use a > 0 e xv ≥ 0 para um mínimo após o início. yv pode ser negativo. '
+                'Exemplo: a = 1, b = -6, c = 5 (raízes 1 e 5). Para perguntar raízes, deve existir uma raiz real não negativa.')
+    base=('Use a < 0, xv ≥ 0 e yv > 0 para um máximo no domínio do contexto. '
+          'Exemplo: a = -1, b = 6, c = 0; ou a = -1 com raízes 0 e 6. '
+          'No modo por raízes, use duas distintas cuja média seja não negativa. ')
+    if cenario in PROJETEIS:
+        return base+'c é a altura inicial: use c ≥ 0. Exemplo de lançamento acima do solo: a = -1, b = 4, c = 5 (raízes -1 e 5).'
+    return base+'Se pedir raízes, deve haver ao menos uma raiz real não negativa. x representa '+{
+        'Lucro por quantidade vendida':'milhares de unidades vendidas.',
+        'Lucro ao longo dos dias':'dias desde o início da campanha.',
+        'Terreno com cerca':'uma dimensão em metros; considere somente área positiva.',
+        'Receita de ingressos':'o preço em reais; considere preços e receita não negativos.'}[cenario]
+
+
 def imagem(q):
     if q.apresentacao != 'Expressão da função' or not q.incluir_imagem or q.cenario not in IMAGENS:
         return None
@@ -26,10 +48,12 @@ def validar(q, xv, yv, roots):
     if q.apresentacao != 'Expressão da função' or q.cenario == 'Sem contexto':
         return
     minimo = q.cenario in ('Cabo suspenso', 'Temperatura de uma câmara fria')
+    if q.cenario=='Cabo suspenso' and q.modo=='Raízes e a':
+        raise ValueError('Cabo acima do solo não tem raízes reais. Troque para Coeficientes; exemplo: a=1, b=-6, c=13.')
     if (minimo and q.a < 0) or (not minimo and q.a > 0):
-        raise ValueError('Neste contexto, use a positivo para mínimo ou negativo para máximo.')
+        raise ValueError('Use a > 0 para este mínimo.' if minimo else 'Use a < 0 para este máximo.')
     if q.cenario != 'Temperatura de uma câmara fria' and yv <= 0:
-        raise ValueError('O vértice deve ter valor positivo para este contexto.')
+        raise ValueError('yv deve ser maior que zero. '+('No cabo, aumente c até c > b²/(4a).' if q.cenario=='Cabo suspenso' else 'Ajuste os coeficientes para obter um máximo positivo.'))
     if xv < 0:
         raise ValueError('O vértice deve corresponder a uma distância, tempo ou quantidade não negativa.')
     if q.alvo_contexto == 'Raízes' and q.cenario != 'Cabo suspenso' and not any(r >= 0 for r in roots):

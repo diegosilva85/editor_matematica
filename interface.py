@@ -13,6 +13,7 @@ from solidos import Solido, TIPOS, campos, desenho
 from exponenciais import Exponencial, TIPOS as TIPOS_EXP, coeficiente
 from documentos import carregar_documento
 from progressao import Progressao, TIPOS as TIPOS_PA, ALVOS as ALVOS_PA, PADRAO as PADRAO_PA, DADOS_SOMA
+from janelas import maximizar
 
 
 class Aba:
@@ -40,12 +41,18 @@ class Aba:
         area=ttk.Frame(self.frame); area.pack(fill='both',expand=True,pady=8)
         canvas=tk.Canvas(area,highlightthickness=0)
         barra=ttk.Scrollbar(area,orient='vertical',command=canvas.yview)
+        horizontal=ttk.Scrollbar(area,orient='horizontal',command=canvas.xview)
+        horizontal.pack(side='bottom',fill='x')
+        canvas.configure(xscrollcommand=horizontal.set)
         canvas.configure(yscrollcommand=barra.set)
         barra.pack(side='right',fill='y'); canvas.pack(side='left',fill='both',expand=True)
         self.corpo=ttk.Frame(canvas)
         janela=canvas.create_window((0,0),window=self.corpo,anchor='nw')
-        self.corpo.bind('<Configure>',lambda e:canvas.configure(scrollregion=canvas.bbox('all')))
-        canvas.bind('<Configure>',lambda e:canvas.itemconfigure(janela,width=e.width))
+        def ajustar_area(event=None):
+            canvas.itemconfigure(janela,width=max(canvas.winfo_width(),self.corpo.winfo_reqwidth()))
+            canvas.configure(scrollregion=canvas.bbox('all'))
+        self.corpo.bind('<Configure>',ajustar_area)
+        canvas.bind('<Configure>',ajustar_area)
 
     def limpar(self, confirmar=True):
         if self.registros and confirmar and not messagebox.askyesno('Limpar aba','Apagar os gráficos desta aba?'):
@@ -58,6 +65,9 @@ class Aba:
         if not self.limpar(): return
         for i in range(self.total.get()):
             card=ttk.LabelFrame(self.corpo,text=f'Gráfico {i+1}',padding=12); card.pack(fill='x',pady=6)
+            if self.grau==2:
+                quadro=card
+                card=ttk.Frame(quadro); card.pack(side='left',fill='both',expand=True)
             row=ttk.Frame(card); row.pack(fill='x')
             reg={}
             entradas={}
@@ -136,6 +146,7 @@ class Aba:
                 reg['_atualizar_apresentacao']=atualizar_apresentacao
                 select.bind('<<ComboboxSelected>>',atualizar_apresentacao)
                 cen.bind('<<ComboboxSelected>>',atualizar_apresentacao)
+                self.apoio_quadratica(quadro,reg)
             else:
                 n=tk.IntVar(value=3)
                 ttk.Label(row,text='Pontos:').pack(side='left')
@@ -153,6 +164,40 @@ class Aba:
                 reg['_quantidade_pontos']=n
                 reg['_atualizar_pontos']=atualizar
                 spin.configure(command=atualizar); atualizar()
+
+    def apoio_quadratica(self,quadro,reg):
+        from apoio_quadraticas import calcular
+        from contextos_quadraticas import orientacao
+        panel=ttk.LabelFrame(quadro,text='Apoio ao professor',padding=10)
+        panel._largura_fixa=True
+        resultado=tk.StringVar(); aviso=tk.StringVar(); dica=tk.StringVar()
+        ttk.Label(panel,text='Somente no editor — não sai no PDF.',wraplength=265).pack(anchor='w',pady=(0,8))
+        ttk.Label(panel,textvariable=resultado,wraplength=265,justify='left',font=('',11,'bold')).pack(anchor='w')
+        ttk.Label(panel,text='Resultados numéricos (até 8 algarismos significativos).',wraplength=265).pack(anchor='w',pady=6)
+        ttk.Label(panel,textvariable=aviso,wraplength=265,foreground='#9a3412',justify='left').pack(anchor='w',pady=6)
+        ttk.Separator(panel).pack(fill='x',pady=8)
+        ttk.Label(panel,textvariable=dica,wraplength=265,justify='left').pack(anchor='w')
+        pending=[None]
+        def atualizar():
+            pending[0]=None
+            if not panel.winfo_exists(): return
+            if reg['apresentacao'].get()!='Expressão da função':
+                panel.pack_forget(); return
+            panel.pack(side='right',fill='y',padx=(15,0),anchor='n')
+            campos={k:v.get() for k,v in reg.items() if not k.startswith('_')}
+            texto,alerta=calcular(campos)
+            resultado.set(texto); aviso.set(alerta)
+            dica.set(orientacao(campos['cenario']))
+        def agendar(*args):
+            if pending[0]: panel.after_cancel(pending[0])
+            pending[0]=panel.after(180,atualizar)
+        def destruir(event):
+            if event.widget==panel and pending[0]:
+                panel.after_cancel(pending[0]); pending[0]=None
+        panel.bind('<Destroy>',destruir,add='+')
+        for key in ('a','b','c','modo','quantidade_raizes','raiz1','raiz2','apresentacao','cenario','alvo_contexto','eixo_contexto'):
+            reg[key].trace_add('write',agendar)
+        atualizar()
 
     def restaurar(self,pagina):
         _,items,colunas,titulo=pagina
@@ -588,6 +633,7 @@ class AbaProgressao(Aba):
 
 def iniciar():
     root=tk.Tk(); root.title('Criador de gráficos — retas, parábolas e triângulos'); root.geometry('900x780')
+    maximizar(root)
     style=ttk.Style(root); style.theme_use('clam'); style.configure('TButton',padding=8)
     ttk.Label(root,text='Criador de gráficos',font=('',20,'bold'),padding=14).pack(anchor='w')
     from editor_listas import EditorLista
