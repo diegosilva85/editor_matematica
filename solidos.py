@@ -24,15 +24,22 @@ class Solido:
     valores: dict
     circular: str = 'Raio'
     cone: str = 'Altura'
+    cenario: str = 'Sem contexto'
+    objetivo: str = 'Volume'
+    incluir_imagem: bool = True
+    unidade: str = 'cm'
 
     def validar(self):
         if self.tipo not in TIPOS: raise ValueError('Escolha um sólido.')
         if self.circular not in ('Raio','Diâmetro') or self.cone not in ('Altura','Geratriz'):
             raise ValueError('Escolha o tipo de medida.')
-        values={k:medida(self.valores.get(k,''))[1] for k,_ in campos(self.tipo,self.circular,self.cone)}
+        inverso=self.cenario in ('Peça mergulhada em aquário','Teste em tanque cilíndrico') and self.objetivo=='Volume pela elevação'
+        values={} if inverso else {k:medida(self.valores.get(k,''))[1] for k,_ in campos(self.tipo,self.circular,self.cone)}
         if self.tipo=='Cone' and self.cone=='Geratriz':
             r=values['r'] if 'r' in values else values['d']/2
             if values['g']<=r: raise ValueError('A geratriz do cone deve ser maior que o raio.')
+        from contextos_solidos import validar
+        validar(self)
 
 
 def desenho(tipo,circular='Raio',cone='Altura'):
@@ -93,6 +100,9 @@ def desenho(tipo,circular='Raio',cone='Altura'):
 
 
 def desenhar_pagina(pdf,items,colunas,titulo,quadro=None):
+    if not quadro and any(s.cenario!='Sem contexto' for s in items):
+        from contextos_solidos import desenhar_paginas
+        return desenhar_paginas(pdf,items,colunas,titulo)
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.colors import HexColor
     if not 1<=len(items)<=12 or colunas not in (1,2,3):

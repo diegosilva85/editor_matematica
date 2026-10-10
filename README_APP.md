@@ -16,6 +16,32 @@ As páginas de primeiro e segundo grau não têm campos de nome e data. O enunci
 
 ## Geometria espacial
 
+### Questões contextualizadas
+
+Em cada cartão, escolha um **Contexto**, o que deseja perguntar e a unidade
+(cm ou m). A opção **Sem contexto** mantém os desenhos geométricos anteriores.
+Marque ou desmarque **Incluir imagem**: todas as medidas necessárias continuam
+no enunciado. A imagem é ilustrativa, sem escala e sem respostas.
+
+Há 12 cenários, cada um com geometria definida para corresponder à ilustração:
+caixa cúbica, aquário retangular sem tampa, lixeira cilíndrica aberta, lata com
+rótulo, canteiro hexagonal regular, barraca com seção equilátera, casquinha,
+telhado piramidal quadrado, embalagem tetraédrica regular, bola esférica,
+cubo mergulhado em aquário e esfera mergulhada em tanque cilíndrico.
+
+As perguntas são filtradas por contexto: volume, área total, área lateral,
+fundo e paredes, barraca sem piso, três faces do tetraedro ou deslocamento de
+água. No problema inverso de imersão, informe a elevação observada: as medidas
+da peça não são fornecidas ao aluno. Para um recipiente inicialmente cheio,
+use nível inicial igual à altura interna. O app valida encaixe, submersão e
+transbordamento; o apoio ao professor mostra valores aproximados e não sai no PDF.
+
+Questões contextuais usam até duas colunas e quatro questões por página
+(menos quando necessário), tanto na aba quanto em **Criar Lista**. O restante
+vai automaticamente para novas páginas. Texto justificado, imagens opcionais
+e configurações são preservados pelo JSON; arquivos antigos continuam aceitos.
+As ilustrações e seus prompts ficam em `assets/contextos_solidos/`.
+
 A quarta aba permite até 12 sólidos por página, com até 3 por linha. Selecione a figura para visualizar o desenho e seus campos. As medidas são em centímetros e aceitam raízes e frações, como nas questões de triângulos.
 
 - Cubo e tetraedro regular: aresta.

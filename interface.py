@@ -426,24 +426,68 @@ class AbaSolidos(Aba):
         self.quantidade.configure(to=12)
         notebook.tab(self.frame,text='Geometria espacial')
         self.titulo.set('Geometria espacial')
+        ttk.Label(self.frame,text='Contextos: até 2 por linha e 4 por página, com paginação automática. Sem contexto: até 3 por linha e 12 por página.').pack(anchor='w')
 
     def criar(self):
         if not self.limpar(): return
         for i in range(self.total.get()):
             card=ttk.LabelFrame(self.corpo,text=f'Sólido {i+1}',padding=10); card.pack(fill='x',pady=6)
+            from contextos_solidos import CENARIOS, PADRAO, campos_recipiente, apoio, enunciado, imagem
             r={'tipo':tk.StringVar(value='Cubo'),'circular':tk.StringVar(value='Raio'),'cone':tk.StringVar(value='Altura'),
-               'valores':{k:tk.StringVar(value=v) for k,v in {'a':'6','b':'8','h':'12','r':'5','d':'10','g':'13'}.items()}}
+               'cenario':tk.StringVar(value='Sem contexto'),'objetivo':tk.StringVar(value='Volume'),
+               'incluir_imagem':tk.BooleanVar(value=True),'unidade':tk.StringVar(value='cm'),
+               'valores':{k:tk.StringVar(value=v) for k,v in PADRAO.items()}}
             self.registros.append(r)
+            contexto=ttk.Frame(card); contexto.pack(fill='x',pady=4)
+            ttk.Label(contexto,text='Contexto:').pack(side='left')
+            contextos=ttk.Combobox(contexto,textvariable=r['cenario'],values=('Sem contexto',*CENARIOS),state='readonly',width=32)
+            contextos.pack(side='left',padx=6)
+            opcoes=ttk.Frame(card); opcoes.pack(fill='x',pady=4)
+            ttk.Label(opcoes,text='Perguntar:').pack(side='left')
+            perguntas=ttk.Combobox(opcoes,textvariable=r['objetivo'],state='readonly',width=24)
+            perguntas.pack(side='left',padx=6)
+            incluir=ttk.Checkbutton(opcoes,text='Incluir imagem',variable=r['incluir_imagem'],command=lambda r=r:r['atualizar']())
+            incluir.pack(side='left')
             row=ttk.Frame(card); row.pack(fill='x')
             ttk.Label(row,text='Sólido:').pack(side='left')
             seletor=ttk.Combobox(row,textvariable=r['tipo'],values=TIPOS,state='readonly',width=30); seletor.pack(side='left',padx=8)
             body=ttk.Frame(card); body.pack(fill='x',pady=8)
             preview=tk.Canvas(body,width=190,height=175,background='white',highlightthickness=1,highlightbackground='#cbd5e1'); preview.pack(side='left',padx=(0,18))
             editor=ttk.Frame(body); editor.pack(side='left',fill='x',expand=True)
-            def atualizar(event=None,r=r,preview=preview,editor=editor):
+            suporte=ttk.LabelFrame(card,text='Enunciado e apoio ao professor (apoio não sai no PDF)',padding=8)
+            suporte.pack(fill='x')
+            largura_texto=560 if getattr(self,'apoio_embaixo',False) else 900
+            texto=ttk.Label(suporte,wraplength=largura_texto,justify='left'); texto.pack(anchor='w',fill='x')
+            ajuda=ttk.Label(suporte,wraplength=largura_texto,justify='left'); ajuda.pack(anchor='w',pady=6)
+            def modelo(r=r):
+                return Solido(r['tipo'].get(),{k:v.get() for k,v in r['valores'].items()},r['circular'].get(),r['cone'].get(),
+                              **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade')})
+            def atualizar_apoio(*args,r=r,texto=texto,ajuda=ajuda,modelo=modelo):
+                try:
+                    q=modelo(); ajuda.configure(text=apoio(q),foreground='#166534')
+                    from html import unescape
+                    texto.configure(text=unescape(enunciado(q)) if q.cenario!='Sem contexto' else 'Determine o volume e a área total de cada sólido.')
+                except (ValueError,KeyError,OverflowError) as e:
+                    ajuda.configure(text='Confira: '+str(e),foreground='#a33'); texto.configure(text='Ajuste as medidas para visualizar o enunciado.')
+            def atualizar(event=None,r=r,preview=preview,editor=editor,seletor=seletor,perguntas=perguntas,incluir=incluir,modelo=modelo,atualizar_apoio=atualizar_apoio):
                 for child in editor.winfo_children(): child.destroy()
+                contextual=r['cenario'].get()!='Sem contexto'
+                incluir.configure(state='normal' if contextual else 'disabled')
+                if contextual:
+                    tipo,_,opcoes=CENARIOS[r['cenario'].get()]
+                    r['tipo'].set(tipo); seletor.configure(state='disabled')
+                    perguntas.configure(values=opcoes,state='readonly')
+                    if r['objetivo'].get() not in opcoes: r['objetivo'].set(opcoes[0])
+                else:
+                    seletor.configure(state='readonly'); perguntas.configure(state='disabled')
+                    r['unidade'].set('cm')
                 tipo=r['tipo'].get()
-                if tipo in ('Cilindro','Cone','Esfera'):
+                if contextual:
+                    row=ttk.Frame(editor); row.pack(anchor='w',pady=3)
+                    ttk.Label(row,text='Unidade de todas as medidas:').pack(side='left')
+                    unit=ttk.Combobox(row,textvariable=r['unidade'],values=('cm','m'),state='readonly',width=5); unit.pack(side='left',padx=6)
+                    unit.bind('<<ComboboxSelected>>',r['atualizar'])
+                if tipo in ('Cilindro','Cone','Esfera') and not (contextual and r['objetivo'].get()=='Volume pela elevação'):
                     row=ttk.Frame(editor); row.pack(anchor='w',pady=3)
                     ttk.Label(row,text='Fornecer:').pack(side='left')
                     for name in ('Raio','Diâmetro'):
@@ -452,26 +496,43 @@ class AbaSolidos(Aba):
                     row=ttk.Frame(editor); row.pack(anchor='w',pady=3)
                     for name in ('Altura','Geratriz'):
                         ttk.Radiobutton(row,text=name,value=name,variable=r['cone'],command=r['atualizar']).pack(side='left',padx=6)
-                for key,label in campos(tipo,r['circular'].get(),r['cone'].get()):
+                fields=[] if contextual and r['objetivo'].get()=='Volume pela elevação' else campos(tipo,r['circular'].get(),r['cone'].get())
+                fields+=campos_recipiente(modelo()) if contextual else []
+                for key,label in fields:
                     row=ttk.Frame(editor); row.pack(anchor='w',pady=3)
-                    ttk.Label(row,text=f'{label} ({key}), cm:',width=24).pack(side='left')
+                    if r['cenario'].get()=='Barraca de camping' and key=='h': label='Comprimento da barraca'
+                    ttk.Label(row,text=f'{label} ({r["unidade"].get()}):',width=30).pack(side='left')
                     ttk.Entry(row,textvariable=r['valores'][key],width=14).pack(side='left')
                 notes={'Prisma triangular':'Base: triângulo equilátero. Prisma reto.', 'Prisma hexagonal':'Base: hexágono regular. Prisma reto.',
                        'Pirâmide de base quadrada':'Pirâmide reta: altura perpendicular ao centro da base.', 'Tetraedro':'Tetraedro regular: todas as arestas iguais.'}
                 ttk.Label(editor,text=notes.get(tipo,'')+'\nAceita 5, 2√3, √3/3 ou 3/2.',wraplength=480).pack(anchor='w',pady=5)
                 preview.delete('all')
+                if contextual:
+                    path=imagem(modelo())
+                    if path:
+                        from PIL import Image, ImageTk
+                        with Image.open(path) as im:
+                            im.thumbnail((190,165)); preview._imagem=ImageTk.PhotoImage(im.copy())
+                        preview.create_image(95,85,image=preview._imagem)
+                    else: preview.create_text(95,80,text='Sem imagem no PDF',width=170)
+                    atualizar_apoio()
+                    return
                 lines,labels=desenho(tipo,r['circular'].get(),r['cone'].get())
                 for points,dash in lines:
                     preview.create_line(*[v for x,y in points for v in (15+x*155,160-y*155)],fill='#2563eb',width=1.5,dash=(3,3) if dash else ())
                 for x,y,label in labels: preview.create_text(15+x*155,160-y*155,text=label,fill='#172b4d')
+                atualizar_apoio()
             r['atualizar']=atualizar
+            for var in r['valores'].values(): var.trace_add('write',atualizar_apoio)
+            contextos.bind('<<ComboboxSelected>>',atualizar); perguntas.bind('<<ComboboxSelected>>',atualizar)
             seletor.bind('<<ComboboxSelected>>',atualizar); atualizar()
 
     def pagina(self):
         items=[]
         for i,r in enumerate(self.registros):
             try:
-                s=Solido(r['tipo'].get(),{k:v.get() for k,v in r['valores'].items()},r['circular'].get(),r['cone'].get())
+                s=Solido(r['tipo'].get(),{k:v.get() for k,v in r['valores'].items()},r['circular'].get(),r['cone'].get(),
+                         **{k:r[k].get() for k in ('cenario','objetivo','incluir_imagem','unidade')})
                 s.validar(); items.append(s)
             except ValueError as e: raise ValueError(f'Sólido {i+1}: {e}')
         return 4,items,self.colunas.get(),self.titulo.get()

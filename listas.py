@@ -62,6 +62,9 @@ def carregar_lista(path):
 
 
 def texto_questao(grau,item):
+    if grau==4 and item.cenario!='Sem contexto':
+        from contextos_solidos import enunciado
+        return '<b>'+escape(item.tipo)+'.</b> '+enunciado(item)
     if grau==2 and item.apresentacao=='Expressão da função': return item.enunciado()
     if grau in (6,7): return item.enunciado()
     if grau==3 and item.apresentacao=='Contextual':
@@ -89,8 +92,9 @@ def planejar(lista):
     from reportlab.lib.pagesizes import A4
     expressoes=any(grau==2 and item.apresentacao=='Expressão da função' for grau,item in lista.itens)
     tabelas=any(grau==7 for grau,item in lista.itens)
-    cols=min(lista.colunas,2) if expressoes or tabelas else lista.colunas
-    limit=min(lista.por_pagina,4) if expressoes else lista.por_pagina
+    solidos_contextuais=any(grau==4 and item.cenario!='Sem contexto' for grau,item in lista.itens)
+    cols=min(lista.colunas,2) if expressoes or tabelas or solidos_contextuais else lista.colunas
+    limit=min(lista.por_pagina,4) if expressoes or solidos_contextuais else lista.por_pagina
     W,H=A4; gap=12; width=(W-60-gap*(cols-1))/cols
     pages=[]; page=[]; top=H-78; count=0; index=0
     while index<len(lista.itens):
@@ -103,6 +107,7 @@ def planejar(lista):
             if grau==2 and textual:
                 from contextos_quadraticas import imagem
                 textual=not bool(imagem(item))
+            if grau==4 and item.cenario!='Sem contexto': textual=not item.incluir_imagem
             graphic=0 if textual else (145 if cols==3 else 185 if cols==2 else 235)
             if grau==7:
                 from estatistica import tabela
@@ -141,6 +146,10 @@ class CanvasQuestao:
 
 
 def desenhar_item(pdf,grau,item,rect):
+    if grau==4 and item.cenario!='Sem contexto':
+        from contextos_solidos import desenhar_imagem
+        desenhar_imagem(pdf,item,rect)
+        return
     if grau==7:
         from estatistica import tabela
         x,y,w,h=rect
