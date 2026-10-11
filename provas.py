@@ -105,8 +105,9 @@ def compor(g,q,index):
         style=ParagraphStyle('prova',fontName='Helvetica',fontSize=size,leading=size*1.22,alignment=TA_JUSTIFY)
         p=Paragraph(f'<b>{index+1}.</b> '+text,style);_,th=p.wrap(w-20,10000)
         alternatives=[]
+        from texto_matematico import AlternativaMatematica
         for label,value in zip('abcde',q.alternativas):
-            a=Paragraph(f'<b>{label})</b> '+escape(value).replace('\n','<br/>'),style)
+            a=AlternativaMatematica(label,value,style)
             _,ah=a.wrap(w-20,10000);alternatives.append((a,ah))
         ah=sum(height+3 for _,height in alternatives)
         gh=0

@@ -113,6 +113,7 @@ class QuestaoProvaDialog(QuestaoDialog):
         self.texto.edit_modified(False);self.texto.bind('<<Modified>>',editado)
         ttk.Button(box,text='Copiar texto atualizado do modelo',command=padrao).pack(anchor='w')
         self.alternativas=[]
+        ttk.Label(box,text='Nas alternativas: x^2; x^{n+1}; 3 over 4; (x+1) over (x-1); 2*x. A prévia mostra a notação formatada.',wraplength=650).pack(anchor='w',pady=5)
         for i,label in enumerate('abcde'):
             row=ttk.Frame(box);row.pack(fill='x',pady=3)
             ttk.Label(row,text=label+')',width=3).pack(side='left')

@@ -24,6 +24,15 @@ Entradas incompletas ou inválidas produzem avisos enquanto você edita.
 
 ### Criar e salvar
 
+Todas as alternativas das provas aceitam notação matemática: `x^2` e
+`x^{n+1}` viram expoentes; `3 over 4` vira uma fração com barra horizontal;
+`2*x` vira multiplicação com ponto central. Agrupe numeradores, denominadores
+e expoentes compostos com parênteses ou chaves, como `(x+1) over (x-1)`.
+A prévia e o PDF usam a mesma formatação vetorial, ajustada à fonte escolhida.
+O editor e o JSON mantêm os comandos originais, sem calcular ou simplificar
+as expressões. Essa sintaxe é para as alternativas, não altera a leitura
+dos campos numéricos de coeficientes ou medidas.
+
 Na edição de cada questão da prova, **Fonte do enunciado e alternativas (pt)**
 aceita valores de 8 a 18 (inclusive decimais). **Automático** mantém o ajuste
 anterior. A alteração atualiza a prévia da questão e a da prova, sem salvar
