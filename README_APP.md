@@ -24,6 +24,14 @@ Entradas incompletas ou inválidas produzem avisos enquanto você edita.
 
 ### Criar e salvar
 
+Na edição de cada questão da prova, **Fonte do enunciado e alternativas (pt)**
+aceita valores de 8 a 18 (inclusive decimais). **Automático** mantém o ajuste
+anterior. A alteração atualiza a prévia da questão e a da prova, sem salvar
+os dados até confirmar. Fechar sem confirmar restaura a prévia anterior.
+A fonte escolhida acompanha a questão na reordenação e no JSON; arquivos
+antigos continuam no modo automático. Gráficos e tabelas mantêm suas fontes
+próprias. Se não couber, o editor avisa, sem reduzir uma fonte manual.
+
 Na tela inicial, **Criar nova prova** abre o editor em tela maximizada, com
 os mesmos conteúdos e formulários de **Criar Lista**. Acrescente, edite,
 remova ou reordene as questões pelas setas. O enunciado pode acompanhar o

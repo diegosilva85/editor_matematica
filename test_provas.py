@@ -22,6 +22,36 @@ def exemplo():
 
 
 class ProvasTests(unittest.TestCase):
+    def test_fontes_independentes_e_json_antigo(self):
+        p=exemplo()
+        for i,(g,q) in enumerate(p.itens):q.fonte=9 if i%2 else 12
+        self.assertEqual(validar_prova(dados_prova(p)),p)
+        for i in (0,1):
+            g,q=p.itens[i];paragraph,_,alts,_=compor(g,q,i)
+            self.assertEqual(paragraph.style.fontSize,q.fonte)
+            self.assertTrue(all(a.style.fontSize==q.fonte for a,h in alts))
+        data=dados_prova(p)
+        for item in data['itens']:item.pop('fonte')
+        self.assertTrue(all(q.fonte is None for g,q in validar_prova(data).itens))
+        for value in (True,7,19,float('nan'),'12'):
+            data=dados_prova(p);data['itens'][0]['fonte']=value
+            with self.assertRaises(ValueError):validar_prova(data)
+
+    def test_previa_temporaria_atualiza_prova_sem_salvar(self):
+        from editor_provas import QuestaoProvaDialog
+        d=QuestaoProvaDialog.__new__(QuestaoProvaDialog)
+        d.editor=Mock();d.editor.lista=exemplo();d.index=5;d.timer=None;d.last=None
+        d.window=Mock();d.preview=Mock();d.status=Mock()
+        g,q=d.editor.lista.itens[5];editada=(g,replace(q,texto='Texto curto.',fonte=12))
+        d.questao=Mock(return_value=editada)
+        with patch('editor_provas.pdf_prova',return_value=b'pdf') as pdf:
+            d.poll();self.assertEqual(pdf.call_args.args[0].itens[5],editada)
+            d.editor.preview.mostrar.assert_called_once_with(b'pdf')
+            self.assertEqual(d.preview.page,2)
+            self.assertIsNone(d.editor.lista.itens[5][1].fonte)
+        with patch('editor_provas.QuestaoDialog.fechar'):
+            d.fechar();d.editor.atualizar.assert_called_once()
+
     def test_quatro_paginas_e_distribuicao(self):
         p=exemplo()
         p.itens=[(g,replace(q,texto=f'TEXTO{i+1} Qual é a resposta?')) for i,(g,q) in enumerate(p.itens)]
@@ -89,9 +119,11 @@ class ProvasTests(unittest.TestCase):
         d.aba=Mock();d.aba.pagina.return_value=(6,[Progressao()],1,'')
         d.texto=Mock();d.texto.get.return_value='Meu enunciado'
         d.personalizar=Mock();d.personalizar.get.return_value=True
+        d.fonte=Mock();d.fonte.get.return_value='12'
         d.alternativas=[Mock() for _ in range(5)]
         for i,w in enumerate(d.alternativas):w.get.return_value=str(i)
         g,q=d.questao();self.assertEqual(q.texto,'Meu enunciado');self.assertEqual(q.alternativas,['0','1','2','3','4'])
+        self.assertEqual(q.fonte,12)
         d.personalizar.get.return_value=False;self.assertIsNone(d.questao()[1].texto)
         d.index=None;d.timer=None;d.window=Mock();d.fechar=Mock();d.editor=Mock()
         d.editor.lista=Prova();d.editor.pending=None

@@ -91,6 +91,10 @@ class QuestaoProvaDialog(QuestaoDialog):
         super().montar(q.modelo if q else None)
         self.personalizar=tk.BooleanVar(value=q is not None and q.texto is not None)
         box=ttk.LabelFrame(self.aba.corpo,text='Enunciado e alternativas da prova',padding=10);box.pack(fill='x',pady=8)
+        self.fonte=tk.StringVar(value=str(q.fonte) if q and q.fonte is not None else 'Automático')
+        fontes=ttk.Frame(box);fontes.pack(fill='x',pady=5)
+        ttk.Label(fontes,text='Fonte do enunciado e alternativas (pt):').pack(side='left')
+        ttk.Combobox(fontes,textvariable=self.fonte,values=('Automático',8,9,10,11,12,13,14,15,16,17,18),width=12).pack(side='left',padx=8)
         ttk.Label(box,text='O texto automático acompanha o modelo. Ao personalizar, revise-o se mudar as medidas; ele não será sobrescrito.',wraplength=650).pack(anchor='w')
         ttk.Checkbutton(box,text='Usar enunciado personalizado',variable=self.personalizar).pack(anchor='w')
         self.texto=tk.Text(box,height=6,wrap='word',undo=True);self.texto.pack(fill='x',pady=5)
@@ -119,8 +123,11 @@ class QuestaoProvaDialog(QuestaoDialog):
 
     def questao(self):
         g,modelo=super().questao()
+        texto_fonte=self.fonte.get().strip()
+        try:fonte=None if texto_fonte=='Automático' else float(texto_fonte.replace(',','.'))
+        except ValueError:raise ValueError('Informe o tamanho da fonte entre 8 e 18 pontos.') from None
         return g,QuestaoProva(modelo,self.texto.get('1.0','end-1c') if self.personalizar.get() else None,
-                              [w.get('1.0','end-1c') for w in self.alternativas])
+                              [w.get('1.0','end-1c') for w in self.alternativas],fonte)
 
     def poll(self):
         if self.timer:self.window.after_cancel(self.timer);self.timer=None
@@ -131,12 +138,23 @@ class QuestaoProvaDialog(QuestaoDialog):
                 if self.texto.get('1.0','end-1c')!=automatico:
                     self.texto.delete('1.0','end');self.texto.insert('1.0',automatico);self.texto.edit_modified(False)
             if key!=self.last:
-                content=pdf_prova(Prova(itens=[q]));x,y,w,h=quadro(0)
-                self.preview.page=1;self.preview.mostrar(content,crop=(x,y,w,h));self.last=key
+                self.editor.sincronizar();rascunho=deepcopy(self.editor.lista)
+                index=len(rascunho.itens) if self.index is None else self.index
+                if self.index is None:rascunho.itens.append(q)
+                else:rascunho.itens[index]=q
+                content=pdf_prova(rascunho);x,y,w,h=quadro(index)
+                self.preview.page=1+index//4;self.preview.mostrar(content,crop=(x,y,w,h));self.last=key
+                self.editor.preview.page=1+index//4;self.editor.preview.mostrar(content)
+                self.editor.status.set('Prévia temporária da questão em edição; confirme para salvar a alteração.')
                 self.status.set('Prévia no tamanho real do quadro da prova. Preencha as cinco alternativas antes de exportar.')
         except (ValueError,OverflowError,OSError,tk.TclError) as exc:
             self.last=None;self.preview.limpar('Confira os dados.');self.status.set(str(exc))
+            self.editor.preview.limpar('A questão em edição não cabe ou contém dados inválidos.')
         self.timer=self.window.after(600,self.poll)
+
+    def fechar(self):
+        super().fechar()
+        self.editor.atualizar() # Descarta só a prévia temporária, não os dados confirmados.
 
     def confirmar(self):
         if self.timer:self.window.after_cancel(self.timer);self.timer=None

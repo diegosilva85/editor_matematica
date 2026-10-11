@@ -19,6 +19,7 @@ class QuestaoProva:
     modelo: object
     texto: str | None = None
     alternativas: list = field(default_factory=lambda:['']*5)
+    fonte: float | None = None
 
 
 @dataclass
@@ -41,7 +42,7 @@ def texto_editavel(grau,modelo):
 
 def dados_prova(prova):
     return dict(formato=FORMATO,versao=1,**{k:getattr(prova,k) for k in ('titulo','escola','professor','numero','mensagem')},
-                itens=[dict(conteudo=g,dados=asdict(q.modelo),texto=q.texto,alternativas=q.alternativas) for g,q in prova.itens])
+                itens=[dict(conteudo=g,dados=asdict(q.modelo),texto=q.texto,alternativas=q.alternativas,fonte=q.fonte) for g,q in prova.itens])
 
 
 def validar_prova(dados,completa=False):
@@ -62,7 +63,9 @@ def validar_prova(dados,completa=False):
             if texto is not None and (not isinstance(texto,str) or not texto.strip() or len(texto)>8000):raise ValueError(f'Questão {i}: enunciado inválido (até 8000 caracteres).')
             if not isinstance(alts,list) or len(alts)!=5 or any(not isinstance(a,str) or len(a)>1000 for a in alts):raise ValueError(f'Questão {i}: informe cinco alternativas de até 1000 caracteres.')
             if completa and any(not a.strip() for a in alts):raise ValueError(f'Questão {i}: preencha todas as alternativas, de a a e.')
-            result.append((model[0],QuestaoProva(model[1],texto,list(alts))))
+            fonte=e.get('fonte')
+            if fonte is not None and (type(fonte) not in (int,float) or not 8<=fonte<=18):raise ValueError(f'Questão {i}: escolha fonte entre 8 e 18 pontos.')
+            result.append((model[0],QuestaoProva(model[1],texto,list(alts),fonte)))
         return Prova(**meta,itens=result)
     except (KeyError,TypeError,AttributeError) as exc:raise ValueError('JSON de prova incompleto ou inválido.') from exc
 
@@ -98,7 +101,7 @@ def compor(g,q,index):
         graphic=bool(imagem(q.modelo))
     elif g==4 and q.modelo.cenario!='Sem contexto':graphic=q.modelo.incluir_imagem
     elif g==8:graphic=q.modelo.incluir_imagem
-    for size in (10,9.5,9):
+    for size in ((q.fonte,) if q.fonte is not None else (10,9.5,9)):
         style=ParagraphStyle('prova',fontName='Helvetica',fontSize=size,leading=size*1.22,alignment=TA_JUSTIFY)
         p=Paragraph(f'<b>{index+1}.</b> '+text,style);_,th=p.wrap(w-20,10000)
         alternatives=[]
@@ -114,7 +117,7 @@ def compor(g,q,index):
                 gh+=12
             else:gh=min(160,h-30-th-ah-12)
         if th+ah+gh+42<=h and (not graphic or g==7 or gh>=110):return p,th,alternatives,gh
-    raise ValueError(f'Questão {index+1} não cabe no quadro da prova. Encurte o enunciado/alternativas, reduza a tabela ou retire a imagem opcional. A prova permanece com quatro páginas.')
+    raise ValueError(f'Questão {index+1} não cabe no quadro da prova. Reduza a fonte, encurte o enunciado/alternativas, reduza a tabela ou retire a imagem opcional. A prova permanece com quatro páginas.')
 
 
 def capa(pdf,p):
