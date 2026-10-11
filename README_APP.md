@@ -24,6 +24,11 @@ Entradas incompletas ou inválidas produzem avisos enquanto você edita.
 
 ### Criar e salvar
 
+Na capa, os quadrados **NOTA** e **PM** ficam acima do gabarito, à direita.
+O campo **Lado dos quadrados NOTA/PM (cm)** ajusta os dois juntos, de 1,5 a
+3 cm (padrão: 3 cm), com atualização da prévia. O tamanho é preservado no
+JSON. O limite mantém os quadrados fora do cartão-resposta e de suas marcas.
+
 Todas as alternativas das provas aceitam notação matemática: `x^2` e
 `x^{n+1}` viram expoentes; `3 over 4` vira uma fração com barra horizontal;
 `2*x` vira multiplicação com ponto central. Agrupe numeradores, denominadores

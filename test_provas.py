@@ -22,6 +22,21 @@ def exemplo():
 
 
 class ProvasTests(unittest.TestCase):
+    def test_quadrados_nota_pm(self):
+        from reportlab.lib.units import cm
+        for tamanho in (1.5,2.4,3):
+            p=Prova(tamanho_quadrados=tamanho);canvas=Mock();capa(canvas,p)
+            self.assertEqual(canvas.rect.call_count,2)
+            left,right=[c.args for c in canvas.rect.call_args_list]
+            self.assertAlmostEqual(left[2],tamanho*cm);self.assertEqual(left[2],left[3])
+            self.assertEqual(left[1],right[1]);self.assertLess(left[0]+left[2],right[0])
+            self.assertEqual(validar_prova(dados_prova(p)),p)
+        data=dados_prova(Prova());data.pop('tamanho_quadrados')
+        self.assertEqual(validar_prova(data).tamanho_quadrados,3)
+        for value in (True,0,4,float('nan'),'3'):
+            data['tamanho_quadrados']=value
+            with self.assertRaises(ValueError):validar_prova(data)
+
     def test_fontes_independentes_e_json_antigo(self):
         p=exemplo()
         for i,(g,q) in enumerate(p.itens):q.fonte=9 if i%2 else 12

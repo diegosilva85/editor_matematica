@@ -23,11 +23,23 @@ class EditorProva(EditorLista):
             ttk.Entry(self.config,textvariable=var,width=width).grid(row=row,column=col+1,sticky='w',padx=5)
             var.trace_add('write',self.alterado)
         ttk.Button(self.config,text='Salvar rascunho JSON',command=self.rascunho).grid(row=1,column=4,columnspan=2,padx=8)
+        self.meta['tamanho_quadrados']=tk.StringVar(value='3,0')
+        ttk.Label(self.config,text='Lado dos quadrados NOTA/PM (cm):').grid(row=2,column=0,columnspan=2,sticky='w',padx=5,pady=4)
+        ttk.Spinbox(self.config,from_=1.5,to=3,increment=.1,textvariable=self.meta['tamanho_quadrados'],width=7).grid(row=2,column=2,sticky='w')
+        def ajustar_quadrados(*args):
+            self.preview.page=0
+            self.alterado()
+        self.meta['tamanho_quadrados'].trace_add('write',ajustar_quadrados)
         self.tree.heading('conteudo',text='Questões da prova (1 a 10)')
         self.atualizar();self.dirty=False
 
     def sincronizar(self):
-        for key,var in self.meta.items():setattr(self.lista,key,var.get())
+        for key,var in self.meta.items():
+            value=var.get()
+            if key=='tamanho_quadrados':
+                try:value=float(value.replace(',','.'))
+                except ValueError:raise ValueError('Informe o lado dos quadrados em centímetros (1,5 a 3).') from None
+            setattr(self.lista,key,value)
 
     def atualizar(self,content=None):
         if getattr(self,'_exportando',False):return

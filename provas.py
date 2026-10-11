@@ -30,6 +30,7 @@ class Prova:
     numero: str = '1'
     mensagem: str = 'Boa prova e que a força esteja com você!'
     itens: list = field(default_factory=list)
+    tamanho_quadrados: float = 3.0
 
 
 def texto_editavel(grau,modelo):
@@ -42,6 +43,7 @@ def texto_editavel(grau,modelo):
 
 def dados_prova(prova):
     return dict(formato=FORMATO,versao=1,**{k:getattr(prova,k) for k in ('titulo','escola','professor','numero','mensagem')},
+                tamanho_quadrados=prova.tamanho_quadrados,
                 itens=[dict(conteudo=g,dados=asdict(q.modelo),texto=q.texto,alternativas=q.alternativas,fonte=q.fonte) for g,q in prova.itens])
 
 
@@ -53,6 +55,9 @@ def validar_prova(dados,completa=False):
         for k,v in meta.items():
             if not isinstance(v,str) or len(v)>160 or (k!='mensagem' and not v.strip()):raise ValueError(f'Preencha {k} (até 160 caracteres).')
         if not re.fullmatch(r'[0-9]{1,6}',meta['numero']):raise ValueError('Use um número de prova de 1 a 6 algarismos.')
+        tamanho=dados.get('tamanho_quadrados',3.0)
+        if type(tamanho) not in (int,float) or not 1.5<=tamanho<=3:raise ValueError('Use quadrados com lado entre 1,5 e 3 cm.')
+        meta['tamanho_quadrados']=tamanho
         entries=dados['itens']
         if not isinstance(entries,list) or len(entries)>10:raise ValueError('A prova comporta dez questões.')
         if completa and len(entries)!=10:raise ValueError('Acrescente exatamente dez questões para exportar a prova.')
@@ -136,8 +141,15 @@ def capa(pdf,p):
     linha('Aluno:',45,H-188,70);pdf.line(101,H-210,W-45,H-210)
     linha('Data: ____ / ____ / ______',45,H-237,W-90)
     linha('Professor: '+p.professor,45,H-279,W-90)
-    linha(p.titulo,45,H-350,W-90,20)
+    linha(p.titulo,45,H-330,W-90,20)
     linha('Semana {'+p.numero+'}',45,H-408,W-90,17)
+    from reportlab.lib.units import cm
+    lado=p.tamanho_quadrados*cm;gap=14
+    pdf.setLineWidth(1.2);pdf.setFont('Helvetica-Bold',12)
+    for i,label in enumerate(('NOTA','PM')):
+        x=W-45-2*lado-gap+i*(lado+gap)
+        pdf.rect(x,350,lado,lado)
+        pdf.drawCentredString(x+lado/2,350+lado+8,label)
     linha('GABARITO',45,350,W-90,16)
     linha('Preencha apenas uma alternativa por questão.',45,321,W-90,10)
     # Quatro marcas em L de geometria fixa, reservadas para futura leitura óptica.
