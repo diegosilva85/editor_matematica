@@ -133,6 +133,7 @@ class AlternativaMatematica(Flowable):
         return width,self.height
     def draw(self):
         pdf=self.canv;size=self.style.fontSize;top=self.height
+        pdf.setFillColorRGB(0,0,0);pdf.setStrokeColorRGB(0,0,0)
         for i,(row,a,d) in enumerate(self.rows):
             baseline=top-a
             if i==0:pdf.setFont('Helvetica-Bold',size);pdf.drawString(0,baseline,self.label+')')

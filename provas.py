@@ -142,7 +142,7 @@ def capa(pdf,p):
     linha('Data: ____ / ____ / ______',45,H-237,W-90)
     linha('Professor: '+p.professor,45,H-279,W-90)
     linha(p.titulo,45,H-330,W-90,20)
-    linha('Semana {'+p.numero+'}',45,H-408,W-90,17)
+    linha('Semana '+p.numero,45,H-408,W-90,17)
     from reportlab.lib.units import cm
     lado=p.tamanho_quadrados*cm;gap=14
     pdf.setLineWidth(1.2);pdf.setFont('Helvetica-Bold',12)
@@ -177,13 +177,16 @@ def pdf_prova(prova,completa=False):
     stream=BytesIO();pdf=Canvas(stream,pagesize=A4);W,H=A4;pdf.setTitle(prova.titulo)
     capa(pdf,prova);pdf.showPage()
     for page,(start,end) in enumerate(((0,4),(4,8),(8,10)),2):
-        pdf.setFont('Helvetica-Bold',11);pdf.drawString(30,H-30,'Matemática - Semana {'+prova.numero+'}')
+        pdf.setFont('Helvetica-Bold',11);pdf.drawString(30,H-30,'Matemática - Semana '+prova.numero)
         for i in range(start,min(end,len(prova.itens))):
             g,q=prova.itens[i];x,y,w,h=quadro(i);p,th,alts,gh=planos[i]
             pdf.saveState();pdf.setLineWidth(.5);pdf.setStrokeGray(.5);pdf.rect(x,y,w,h)
             cursor=y+h-10;p.drawOn(pdf,x+10,cursor-th);cursor-=th+8
             if gh:
-                desenhar_item(pdf,g,q.modelo,(x+5,cursor-gh,w-10,gh));cursor-=gh+8
+                pdf.saveState()
+                try:desenhar_item(pdf,g,q.modelo,(x+5,cursor-gh,w-10,gh))
+                finally:pdf.restoreState()
+                cursor-=gh+8
             for a,ah in alts:a.drawOn(pdf,x+10,cursor-ah);cursor-=ah+3
             pdf.restoreState()
         if page==4 and prova.mensagem:

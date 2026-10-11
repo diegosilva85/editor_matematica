@@ -7,6 +7,13 @@ from progressao import Progressao
 
 
 class MatematicaTests(unittest.TestCase):
+    def test_cor_das_alternativas_independente_do_grafico(self):
+        from unittest.mock import Mock
+        alt=AlternativaMatematica('a','x^2 + 1 over 2',ParagraphStyle('t',fontSize=12,leading=15))
+        alt.wrap(240,1000);alt.canv=Mock();alt.draw()
+        calls=alt.canv.method_calls
+        self.assertEqual(calls[0][0],'setFillColorRGB');self.assertEqual(calls[0].args,(0,0,0))
+        self.assertEqual(calls[1][0],'setStrokeColorRGB');self.assertEqual(calls[1].args,(0,0,0))
     def test_operadores_e_grupos(self):
         for text,kind in [('x^2','power'),('x^{n+1}','power'),('3 over 4','fraction'),('(x+1) over (x-1)','fraction'),('2*x','row'),('2^(-3)','power')]:
             p=partes(text);self.assertEqual(len(p),1,text);self.assertEqual(p[0][0],kind)

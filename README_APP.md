@@ -55,7 +55,7 @@ reescrevem seu texto: use **Copiar texto atualizado do modelo** se desejar.
 
 O PDF tem sempre quatro páginas A4 verticais: identificação e cartão-resposta;
 questões 1–4; questões 5–8; questões 9–10 e mensagem final. Escola, professor,
-título, número entre chaves e mensagem são configuráveis. O cartão tem dez
+título, número (sem chaves) e mensagem são configuráveis. O cartão tem dez
 colunas e cinco linhas de bolhas, com quatro marcas em L fixas. As marcas
 estão reservadas para uma futura leitura por câmera, ainda não implementada.
 

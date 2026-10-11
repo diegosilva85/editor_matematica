@@ -75,7 +75,7 @@ class ProvasTests(unittest.TestCase):
             for index,page in enumerate(doc):
                 self.assertLess(page.get_width(),page.get_height())
                 tp=page.get_textpage();text=tp.get_text_range();tp.close();page.close()
-                if index==0:self.assertIn('Semana {23}',text);self.assertIn('Aluno:',text)
+                if index==0:self.assertIn('Semana 23',text);self.assertNotIn('{23}',text);self.assertIn('Aluno:',text)
                 else:
                     expected=(range(1,5),range(5,9),range(9,11))[index-1]
                     for i in range(1,11):self.assertEqual(f'TEXTO{i} ' in text,i in expected)
