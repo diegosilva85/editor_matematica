@@ -100,7 +100,8 @@ Escolha **Área**, **Perímetro/comprimento** ou ambos. O enunciado explica a
 composição, as medidas e quais contornos considerar, inclusive bordas de furos.
 Nos círculos concêntricos, selecione disco central, anel ou disco maior; a
 hachura acompanha essa seleção. A imagem é opcional, ilustrativa e sem escala;
-as medidas aparecem no texto. O apoio ao professor mostra os resultados e
+as medidas aparecem cotadas na figura e são atualizadas durante a edição.
+Sem imagem, as medidas permanecem no enunciado. O apoio ao professor mostra os resultados e
 alertas de validação, sem incluir respostas no PDF.
 
 A exportação permite até três questões por linha e doze por página, antecipando

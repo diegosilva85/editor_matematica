@@ -123,6 +123,7 @@ class FiguraPlana:
         if intro.rstrip('.').lower()==FIGURAS[self.figura]['nome'].lower():intro=''
         if n==12:intro+=f' Considere apenas: {self.regiao.lower()}.'
         medidas='; '.join(f'{label.lower()}: {escape(self.valores[key].strip())} {self.unidade}' for key,label in campos(self.figura,self.circular))
+        medidas='As medidas estão indicadas na figura.' if self.incluir_imagem else 'Medidas: '+medidas+'.'
         if n==6:perimetro='o comprimento da circunferência'
         elif n==12 and self.regiao!=REGIOES[1]:perimetro='o comprimento da circunferência que limita o disco escolhido'
         elif n in (16,27) or (n==12 and self.regiao==REGIOES[1]):
@@ -132,7 +133,7 @@ class FiguraPlana:
         pergunta=alvo if self.pedido==PEDIDOS[0] else perimetro if self.pedido==PEDIDOS[1] else alvo+' e '+perimetro
         pi=' Deixe π na resposta quando necessário.' if n in (6,10,11,12,16,19,20,22,25,26,27,28) else ''
         escala=' Figura ilustrativa, sem escala.' if self.incluir_imagem else ''
-        return f'<b>{escape(FIGURAS[self.figura]["nome"])}.</b> {intro} Medidas: {medidas}. Calcule {pergunta}.{pi}{escala}'
+        return f'<b>{escape(FIGURAS[self.figura]["nome"])}.</b> {intro} {medidas} Calcule {pergunta}.{pi}{escala}'
 
 
 def grandezas(q):
@@ -237,15 +238,18 @@ def desenhar_imagem(pdf,q,rect):
     from reportlab.lib.utils import ImageReader
     q.validar();path=imagem(q)
     if path is None:return
-    x,y,w,h=rect;size=min(w-8,h-6)
+    x,y,w,h=rect;size=min(w-8,h-6)*400/510
+    origem=(x+(w-size)/2,y+(h-size)/2)
     if FIGURAS[q.figura]['numero']==12:
         pdf.saveState();pdf.translate(x+(w-size)/2,y+(h-size)/2);pdf.scale(size/400,size/400)
         pdf.setStrokeColorRGB(0,0,0);pdf.setLineWidth(1.1)
         for x1,y1,x2,y2 in tracos_concentricos(q.regiao):pdf.line(x1,400-y1,x2,400-y2)
         pdf.setLineWidth(3.5)
         for r in (145,60):pdf.circle(200,200,r)
-        pdf.restoreState();return
-    pdf.drawImage(ImageReader(str(path)),x+(w-size)/2,y+(h-size)/2,width=size,height=size,mask='auto')
+        pdf.restoreState()
+    else:pdf.drawImage(ImageReader(str(path)),*origem,width=size,height=size,mask='auto')
+    from cotas_planas import desenhar
+    desenhar(pdf,q,origem,size/400)
 
 
 def desenhar_pagina(pdf,items,colunas,titulo):

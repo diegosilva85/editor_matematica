@@ -20,6 +20,19 @@ def exemplo(n,**kw):
 
 
 class PlanaTests(unittest.TestCase):
+    def test_cotas_todas_as_figuras_e_atualizacao(self):
+        from cotas_planas import anotacoes,miniatura
+        for n in range(1,30):
+            for modo in ('Raio','Diâmetro'):
+                q=exemplo(n,circular=modo)
+                self.assertEqual({x[0] for x in anotacoes(q)},set(q.valores))
+        q=exemplo(1);antes=miniatura(q).tobytes()
+        q.valores['a']='7,6'
+        self.assertEqual(anotacoes(q)[0][1],'7,6 cm')
+        self.assertNotEqual(antes,miniatura(q).tobytes())
+        diam=anotacoes(exemplo(25,circular='Diâmetro'))[-1]
+        self.assertEqual(diam[2:4],((115,90),(285,90)))
+
     def test_acervo_completo_e_medidas_exatas(self):
         self.assertEqual(len(FIGURAS),29)
         for n in range(1,30):
@@ -29,7 +42,7 @@ class PlanaTests(unittest.TestCase):
             for pedido in PEDIDOS:self.assertIn('Calcule',replace(q,pedido=pedido).enunciado())
         q=exemplo(1);q.valores['a']='7,6'
         self.assertEqual(grandezas(q),(sp.Rational(1444,25),sp.Rational(152,5)))
-        self.assertIn('7,6',q.enunciado());self.assertNotIn('38/5',q.enunciado())
+        self.assertNotIn('7,6',q.enunciado());self.assertIn('7,6',replace(q,incluir_imagem=False).enunciado())
         q.valores['a']='2√3/3';self.assertEqual(grandezas(q)[0],sp.Rational(4,3))
 
     def test_referencias_numericas_todas_as_figuras(self):

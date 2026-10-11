@@ -81,7 +81,7 @@ class AbaPlana(Aba):
         regiao=ttk.Combobox(row,textvariable=r['regiao'],values=REGIOES,state='readonly',width=29)
         regiao.pack(side='left',padx=6)
         body=ttk.Frame(form);body.pack(fill='x',pady=8)
-        preview=tk.Canvas(body,width=205,height=205,background='white',highlightthickness=0);preview.pack(side='left',padx=(0,10))
+        preview=tk.Canvas(body,width=295,height=295,background='white',highlightthickness=0);preview.pack(side='left',padx=(0,10))
         fields=ttk.Frame(body);fields.pack(side='left',fill='x',expand=True)
         ttk.Label(form,text='Aceita inteiros, vírgula decimal, frações e raízes: 7,6; 3/2; √3; 2√3/3. A figura é ilustrativa, sem escala.',wraplength=560).pack(anchor='w',pady=4)
         regras=ttk.Label(form,wraplength=560,justify='left');regras.pack(anchor='w',pady=4)
@@ -95,11 +95,13 @@ class AbaPlana(Aba):
             modelo=self.modelo(r);mensagem,ok=apoio(modelo)
             ajuda.configure(text=mensagem,foreground='#166534' if ok else '#a33')
             texto.configure(text='Enunciado: '+unescape(re.sub('<[^>]+>','',modelo.enunciado())) if ok else 'Ajuste as medidas para gerar a questão.')
-            if FIGURAS[modelo.figura]['numero']==12:
-                from geometria_plana import miniatura_concentrica
+            if ok:
+                from cotas_planas import miniatura as miniatura_cotada
                 from PIL import ImageTk
-                preview._imagem=ImageTk.PhotoImage(miniatura_concentrica(modelo.regiao))
-                preview.delete('all');preview.create_image(102,102,image=preview._imagem)
+                preview._imagem=ImageTk.PhotoImage(miniatura_cotada(modelo))
+                preview.delete('all');preview.create_image(147,147,image=preview._imagem)
+            else:
+                preview.delete('all');preview.create_text(147,147,text='Confira as medidas para atualizar a figura.',width=240)
 
         def agendar(*args):
             if pausado[0]:return
@@ -125,7 +127,7 @@ class AbaPlana(Aba):
             regras.configure(text=spec['construcao'])
             from PIL import ImageTk
             preview._imagem=ImageTk.PhotoImage(miniatura(r['figura'].get(),200))
-            preview.delete('all');preview.create_image(102,102,image=preview._imagem)
+            preview.delete('all');preview.create_image(147,147,image=preview._imagem)
             pausado[0]=False;agendar()
 
         def trocar_figura(event=None):
