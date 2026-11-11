@@ -25,6 +25,7 @@ class JanelaEnem(tk.Toplevel):
         self.ano=tk.StringVar(value='Todos');self.prova=tk.StringVar(value='Todas')
         self.conteudo=tk.StringVar(value='Todos');self.busca=tk.StringVar();self.numero_pagina=tk.StringVar(value='1')
         self.status=tk.StringVar(value='');self.resultados=[];self.imagens=[];self.baixando=False
+        self.selecionadas={};self.seletores={};self.gerando_lista=False
         ttk.Label(self,text='Questões do Enem — Matemática',font=('',18,'bold'),padding=12).pack(anchor='w')
         corpo=ttk.Frame(self,padding=12);corpo.pack(fill='both',expand=True)
         esquerdo=ttk.Frame(corpo,width=290);esquerdo.pack(side='left',fill='y',padx=(0,15));esquerdo.pack_propagate(False)
@@ -37,6 +38,8 @@ class JanelaEnem(tk.Toplevel):
         entry=ttk.Entry(esquerdo,textvariable=self.busca);entry.pack(fill='x');entry.bind('<Return>',lambda e:self.aplicar())
         ttk.Button(esquerdo,text='Pesquisar',command=self.aplicar).pack(fill='x',pady=8)
         ttk.Button(esquerdo,text='Limpar filtros',command=self.limpar).pack(fill='x')
+        self.botao_lista=ttk.Button(esquerdo,text='Lista de exercícios (0)',command=self.lista_exercicios)
+        self.botao_lista.pack(fill='x',pady=(12,0))
         ttk.Separator(esquerdo).pack(fill='x',pady=15)
         ttk.Label(esquerdo,text='Conteúdos sugeridos automaticamente; não são classificações oficiais. Use “Editar conteúdos” na questão para revisar.',wraplength=280,justify='left').pack(anchor='w')
         ttk.Label(esquerdo,text='Um caderno por aplicação, sem repetir as cores. Em 2016, a 2ª aplicação e a PPL aparecem separadas.',wraplength=280,justify='left').pack(anchor='w',pady=12)
@@ -110,7 +113,7 @@ class JanelaEnem(tk.Toplevel):
         self.contagem.configure(text=f'{len(self.resultados)} questões • página {self.pagina+1} de {total}')
         itens=self.resultados[self.pagina*self.POR_PAGINA:(self.pagina+1)*self.POR_PAGINA]
         if not itens:ttk.Label(self.cards,text='Nenhuma questão encontrada. Experimente outros filtros.',padding=25).pack()
-        self.slots=[]
+        self.slots=[];self.seletores={}
         largura=max(350,min(900,self.canvas.winfo_width()-45))
         if self.canvas.winfo_width()<100:largura=700
         for q in itens:
@@ -123,6 +126,10 @@ class JanelaEnem(tk.Toplevel):
             ttk.Button(botoes,text='Ampliar',command=lambda q=q:self.ampliar(q)).pack(side='left')
             ttk.Button(botoes,text='Página original',command=lambda q=q:self.ampliar(q,True)).pack(side='left',padx=5)
             ttk.Button(botoes,text='Editar conteúdos',command=lambda q=q:self.editar(q)).pack(side='left')
+            var=tk.BooleanVar(master=self,value=q['id'] in self.selecionadas)
+            self.seletores[q['id']]=var
+            ttk.Checkbutton(botoes,text='Lista',variable=var,
+                command=lambda q=q,v=var:self.selecionar(q,v.get())).pack(side='left',padx=6)
             ttk.Button(botoes,text=rotulo_gabarito(q),
                        state='normal' if q.get('gabarito_url') else 'disabled',
                        command=lambda q=q:webbrowser.open(q['gabarito_url'])).pack(side='left',padx=(8,0))
@@ -163,6 +170,13 @@ class JanelaEnem(tk.Toplevel):
                     self.status.set('')
                     if isinstance(result,str):messagebox.showerror('Gerar Boss',result,parent=self)
                     else:self.exibir_boss(q,*result)
+                elif tipo=='lista_enem':
+                    result=args[0];self.gerando_lista=False
+                    self.botao_lista.configure(state='normal');self.status.set('')
+                    if isinstance(result,str):messagebox.showerror('Lista de exercícios',result,parent=self)
+                    else:
+                        from lista_enem import abrir_preview
+                        abrir_preview(self,*result,self.provas,self.lista_salva)
         except Empty:pass
         self._consulta=self.after(80,self.consultar)
 
@@ -219,6 +233,32 @@ class JanelaEnem(tk.Toplevel):
             try:result=gerar_boss(q,self.provas[q['prova']])
             except Exception as exc:result=str(exc)
             self.fila.put(('boss',q,result))
+        self.executor.submit(tarefa)
+
+    def selecionar(self,q,marcada):
+        if marcada:self.selecionadas[q['id']]=q
+        else:self.selecionadas.pop(q['id'],None)
+        self.botao_lista.configure(text=f'Lista de exercícios ({len(self.selecionadas)})')
+
+    def lista_salva(self,questoes):
+        for q in questoes:
+            self.selecionadas.pop(q['id'],None)
+            if q['id'] in self.seletores:self.seletores[q['id']].set(False)
+        self.botao_lista.configure(text=f'Lista de exercícios ({len(self.selecionadas)})')
+
+    def lista_exercicios(self):
+        if self.gerando_lista:return
+        if not self.selecionadas:
+            messagebox.showinfo('Lista de exercícios','Marque o seletor Lista nas questões desejadas.',parent=self);return
+        self.gerando_lista=True;self.botao_lista.configure(state='disabled')
+        questoes=list(self.selecionadas.values())
+        def tarefa():
+            from lista_enem import gerar_lista
+            try:
+                result=gerar_lista(questoes,self.provas,lambda n,total:self.fila.put(
+                    ('progresso',n,total,f'Preparando lista: {n}/{total} questões…')))
+            except Exception as exc:result=str(exc)
+            self.fila.put(('lista_enem',result))
         self.executor.submit(tarefa)
 
     def exibir_boss(self,q,dados,preview,plano):

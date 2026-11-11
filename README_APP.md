@@ -504,6 +504,15 @@ Esta janela é um navegador do acervo; ainda não adiciona automaticamente uma
 questão do Enem a uma lista ou prova.
 # Folhas Boss do Enem
 
+## Lista com questões selecionadas
+
+Marque **Lista** entre **Editar conteúdos** e o gabarito oficial. As escolhas
+permanecem ao mudar filtros e páginas. O botão **Lista de exercícios (N)**,
+abaixo dos filtros, abre uma prévia paginada. O encaixe pode reordenar as questões
+para economizar folhas, preservando cada questão inteira e sua proporção.
+**Salvar lista** grava PDF e JSON e desmarca as questões salvas. Cancelar,
+fechar a prévia ou falhar ao salvar mantém a seleção. O gabarito não é impresso.
+
 No acervo, **Gerar Boss** abre a prévia de uma folha A4 com cópias da questão
 selecionada e linhas pontilhadas para recorte. O encaixe maximiza as cópias sem
 reduzir abaixo de 80% do tamanho original, removendo margens brancas externas

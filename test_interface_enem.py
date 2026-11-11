@@ -17,7 +17,9 @@ class InterfaceEnemTests(unittest.TestCase):
         w.cards.winfo_children.return_value=[];w.canvas.winfo_width.return_value=800
         w.fila=Queue();w.geracao=0;w.pagina=0;w.futuro=None;w.baixando=False
         w.opcoes={'Todas':'','2015 regular':'2015-regular'}
-        self.patches=[patch('interface_enem.ttk.'+name,Mock()) for name in ('LabelFrame','Frame','Label','Button')]
+        w.selecionadas={};w.seletores={};w.botao_lista=Mock()
+        w._w='.';w.tk=self.tcl.tk;w.master=self.tcl
+        self.patches=[patch('interface_enem.ttk.'+name,Mock()) for name in ('LabelFrame','Frame','Label','Button','Checkbutton')]
         for p in self.patches:p.start();self.addCleanup(p.stop)
 
     def test_filtros_paginacao_e_ultima_pagina(self):
@@ -39,6 +41,14 @@ class InterfaceEnemTests(unittest.TestCase):
     def test_troca_ano_atualiza_provas(self):
         w=self.w;w.ano.set('2016');w.trocar_ano()
         self.assertEqual(len(w.opcoes),4);self.assertEqual(len(w.resultados),135)
+
+    def test_selecao_persiste_filtros_e_limpa_apos_salvar(self):
+        w=self.w;q=w.questoes[0];w.selecionar(q,True);w.selecionar(q,True)
+        self.assertEqual(len(w.selecionadas),1)
+        w.ano.set('2025');w.trocar_ano();self.assertIn(q['id'],w.selecionadas)
+        w.ano.set('Todos');w.trocar_ano();self.assertTrue(w.seletores[q['id']].get())
+        w.lista_salva([q]);self.assertEqual(w.selecionadas,{})
+        self.assertFalse(w.seletores[q['id']].get())
 
 
 if __name__=='__main__':unittest.main()

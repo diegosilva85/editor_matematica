@@ -40,5 +40,10 @@ class BossTests(unittest.TestCase):
         self.assertEqual(planejar(256,300)['quantidade'],6)
         self.assertEqual(planejar(256,460)['quantidade'],4)
 
+    def test_ignora_regua_de_rodape_isolada(self):
+        im=Image.new('RGB',(600,800),'white');d=ImageDraw.Draw(im)
+        d.rectangle((20,20,580,300),fill='black');d.line((10,750,590,750),fill='black',width=2)
+        self.assertLess(aparar_branco(im).height,310)
+
 
 if __name__=='__main__':unittest.main()

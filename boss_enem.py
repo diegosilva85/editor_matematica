@@ -13,6 +13,18 @@ ESCALA_MINIMA = .8
 def aparar_branco(im):
     """Remove somente margens externas; preserva desenhos e espaços internos."""
     mascara=im.convert('L').point(lambda p: 255 if p < 250 else 0)
+    linhas=[y for y in range(im.height) if mascara.crop((0,y,im.width,y+1)).getbbox()]
+    if len(linhas)>1:
+        intervalos=[i for i in range(len(linhas)-1) if linhas[i+1]-linhas[i]>1]
+        if len(intervalos):
+            inicio=int(intervalos[-1])+1
+            rodape=linhas[inicio:]
+            # Régua horizontal isolada do caderno, não um gráfico com rótulos.
+            if (len(rodape)<=6 and rodape[0]-linhas[inicio-1]>60
+                    and max(mascara.crop((0,y,im.width,y+1)).histogram()[255]
+                            for y in rodape)>.85*im.width):
+                im=im.crop((0,0,im.width,int(linhas[inicio-1])+7))
+    mascara=im.convert('L').point(lambda p: 255 if p < 250 else 0)
     caixa=mascara.getbbox()
     if caixa is None:return im
     l,t,r,b=caixa
@@ -41,7 +53,7 @@ def planejar(largura, altura):
                 largura=largura*escala, altura=altura*escala)
 
 
-def gerar_boss(questao, prova):
+def preparar_imagem(questao, prova):
     im = imagem_questao(questao, prova, 2400)
     largura = max(t['bbox'][2]-t['bbox'][0] for t in questao['recortes'])
     pontos_por_pixel=largura/im.width
@@ -63,6 +75,11 @@ def gerar_boss(questao, prova):
         outro=planejar(largura_alternativa,largura_alternativa*alternativa.height/alternativa.width)
         if (outro['quantidade'],outro['escala']) > (plano['quantidade'],plano['escala']):
             im,plano=alternativa,outro
+    return im, plano
+
+
+def gerar_boss(questao, prova):
+    im,plano=preparar_imagem(questao,prova)
     saida = BytesIO()
     pdf = canvas.Canvas(saida, pagesize=A4)
     pdf.setTitle(f"Boss — Enem {questao['ano']} — questão {questao['numero']}")
