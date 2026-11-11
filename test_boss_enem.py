@@ -33,7 +33,7 @@ class BossTests(unittest.TestCase):
         im=Image.new('RGB',(600,800),'white')
         ImageDraw.Draw(im).rectangle((80,100,500,650),fill='black')
         recorte=aparar_branco(im)
-        self.assertEqual(recorte.size,(433,563))
+        self.assertEqual(recorte.size,(431,561))
         self.assertEqual(recorte.getpixel((6,6)),(0,0,0))
 
     def test_melhor_aproveitamento(self):

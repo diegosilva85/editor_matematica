@@ -138,6 +138,7 @@ def filtrar(questoes,ano='',prova='',conteudo='',busca=''):
 
 def imagem_questao(q,prova,largura=700,pasta=DADOS,pagina_inteira=False):
     from PIL import Image
+    from recortes_enem import aparar_branco
     import pypdfium2 as pdfium
     path=caminho_pdf(prova,pasta)
     if not path.exists():raise FileNotFoundError('Baixe esta prova para visualizar as questões.')
@@ -148,7 +149,12 @@ def imagem_questao(q,prova,largura=700,pasta=DADOS,pagina_inteira=False):
             left,bottom,right,top=(0,0,w,h) if pagina_inteira else trecho['bbox']
             scale=min(3,largura/(right-left))
             bitmap=page.render(scale=scale,crop=(left,bottom,w-right,h-top))
-            try:im=bitmap.to_pil().convert('RGB').copy();imagens.append(im)
+            try:
+                im=bitmap.to_pil().convert('RGB').copy()
+                # Limpa cada trecho ANTES de juntar as continuações. Caso
+                # contrário, o branco de fim de página vira espaço interno.
+                if not pagina_inteira:im=aparar_branco(im,horizontal=False)
+                imagens.append(im)
             finally:bitmap.close();page.close()
             if pagina_inteira:break
     width=max(im.width for im in imagens);height=sum(im.height for im in imagens)+12*(len(imagens)-1)

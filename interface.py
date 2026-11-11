@@ -763,6 +763,8 @@ class AbaProgressao(Aba):
 
 def iniciar():
     root=tk.Tk(); root.title('Criador de gráficos — retas, parábolas e triângulos'); root.geometry('900x780')
+    from janelas import ocultar_arquivos_ocultos
+    ocultar_arquivos_ocultos(root)
     maximizar(root)
     style=ttk.Style(root); style.theme_use('clam'); style.configure('TButton',padding=8)
     ttk.Label(root,text='Criador de gráficos',font=('',20,'bold'),padding=14).pack(anchor='w')
