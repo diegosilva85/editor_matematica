@@ -7,16 +7,28 @@ from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 from acervo_enem import imagem_questao, PDF_LOCK
 
+ESCALA_MINIMA = .8
+
+
+def aparar_branco(im):
+    """Remove somente margens externas; preserva desenhos e espaços internos."""
+    mascara=im.convert('L').point(lambda p: 255 if p < 250 else 0)
+    caixa=mascara.getbbox()
+    if caixa is None:return im
+    l,t,r,b=caixa
+    folga=6
+    return im.crop((max(0,l-folga),max(0,t-folga),min(im.width,r+folga),min(im.height,b+folga)))
+
 
 def planejar(largura, altura):
     if largura <= 0 or altura <= 0:
         raise ValueError('Dimensões inválidas da questão.')
     util_w, util_h = A4[0]-20*mm, A4[1]-20*mm
-    espaco = 6*mm
+    espaco = 4*mm
     candidatos = []
-    # Até 10% de redução em relação ao caderno oficial; nunca distorcer.
-    for colunas in range(1, floor((util_w+espaco)/(.9*largura+espaco))+1):
-        for linhas in range(1, floor((util_h+espaco)/(.9*altura+espaco))+1):
+    # Até 20% de redução em relação ao caderno oficial; nunca distorcer.
+    for colunas in range(1, floor((util_w+espaco)/(ESCALA_MINIMA*largura+espaco))+1):
+        for linhas in range(1, floor((util_h+espaco)/(ESCALA_MINIMA*altura+espaco))+1):
             escala = min(1, (util_w-(colunas-1)*espaco)/(colunas*largura),
                          (util_h-(linhas-1)*espaco)/(linhas*altura))
             candidatos.append((colunas*linhas, escala, colunas, linhas))
@@ -32,21 +44,24 @@ def planejar(largura, altura):
 def gerar_boss(questao, prova):
     im = imagem_questao(questao, prova, 2400)
     largura = max(t['bbox'][2]-t['bbox'][0] for t in questao['recortes'])
+    pontos_por_pixel=largura/im.width
+    im=aparar_branco(im)
+    largura=im.width*pontos_por_pixel
     plano = planejar(largura, largura*im.height/im.width)
-    if plano['escala'] < .9 and len(questao['recortes']) > 1:
+    if len(questao['recortes']) > 1:
         # Questões que continuam em outra coluna não precisam virar uma tira
         # vertical minúscula. Mantém os recortes na ordem de leitura, lado a lado.
         from PIL import Image
-        partes=[imagem_questao(dict(questao,recortes=[t]),prova,2400)
+        partes=[aparar_branco(imagem_questao(dict(questao,recortes=[t]),prova,2400))
                 for t in questao['recortes']]
         alternativa=Image.new('RGB',(sum(p.width for p in partes)+18*(len(partes)-1),
                                       max(p.height for p in partes)),'white')
         x=0
         for parte in partes:
             alternativa.paste(parte,(x,0));x+=parte.width+18
-        largura_alternativa=sum(t['bbox'][2]-t['bbox'][0] for t in questao['recortes'])+6*(len(partes)-1)
+        largura_alternativa=alternativa.width*pontos_por_pixel
         outro=planejar(largura_alternativa,largura_alternativa*alternativa.height/alternativa.width)
-        if outro['escala'] > plano['escala']:
+        if (outro['quantidade'],outro['escala']) > (plano['quantidade'],plano['escala']):
             im,plano=alternativa,outro
     saida = BytesIO()
     pdf = canvas.Canvas(saida, pagesize=A4)

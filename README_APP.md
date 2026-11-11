@@ -506,7 +506,8 @@ questão do Enem a uma lista ou prova.
 
 No acervo, **Gerar Boss** abre a prévia de uma folha A4 com cópias da questão
 selecionada e linhas pontilhadas para recorte. O encaixe maximiza as cópias sem
-reduzir abaixo de 90% do tamanho original. Questões maiores ficam em uma única
+reduzir abaixo de 80% do tamanho original, removendo margens brancas externas
+e usando espaçamento compacto entre as cópias. Questões maiores ficam em uma única
 cópia, ajustada proporcionalmente; continuações podem ser dispostas em colunas
 para preservar a leitura. O gabarito não é impresso. **Salvar PDF** salva exatamente
 a folha da prévia e um JSON com a questão, a fonte e os parâmetros de disposição.
