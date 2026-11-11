@@ -8,7 +8,7 @@ from tkinter import ttk,messagebox
 import webbrowser
 from PIL import ImageTk
 from acervo_enem import (CONTEUDOS,carregar_acervo,filtrar,imagem_questao,
-                         caminho_pdf,baixar_prova,salvar_conteudos)
+                         caminho_pdf,baixar_prova,salvar_conteudos,rotulo_gabarito)
 from janelas import maximizar
 
 
@@ -122,6 +122,9 @@ class JanelaEnem(tk.Toplevel):
             ttk.Button(botoes,text='Ampliar',command=lambda q=q:self.ampliar(q)).pack(side='left')
             ttk.Button(botoes,text='Página original',command=lambda q=q:self.ampliar(q,True)).pack(side='left',padx=5)
             ttk.Button(botoes,text='Editar conteúdos',command=lambda q=q:self.editar(q)).pack(side='left')
+            ttk.Button(botoes,text=rotulo_gabarito(q),
+                       state='normal' if q.get('gabarito_url') else 'disabled',
+                       command=lambda q=q:webbrowser.open(q['gabarito_url'])).pack(side='left',padx=(8,0))
             label=ttk.Label(card,text='Carregando imagem…');label.pack(anchor='center');self.slots.append(label)
         def renderizar():
             for n,q in enumerate(itens):

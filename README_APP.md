@@ -460,6 +460,17 @@ O botão **Questões do Enem**, ao lado de **Criar nova prova**, abre uma janela
 maximizada com filtros por ano, prova/aplicação, conteúdo e busca no texto ou
 número da questão. À direita são exibidas quatro questões por página de
 consulta, com rolagem, navegação, ampliação e acesso à página original.
+Ao lado de **Editar conteúdos**, cada questão exibe seu **Gabarito oficial**
+(A–E ou **Anulada**). Clicar nesse botão abre o PDF oficial do Inep. As 1.035
+respostas estão incluídas no aplicativo e aparecem também offline; somente
+a abertura do endereço oficial exige internet. A associação considera ano,
+aplicação e caderno, e não é alterada pela revisão dos conteúdos.
+
+Os 23 PDFs de gabarito baixados ficam em `acervo_enem/gabaritos/`; o catálogo
+versionado `assets/enem/gabaritos.json` contém as respostas, fontes e hashes.
+Para refazer a extração dos arquivos locais, use
+`python importar_gabaritos_enem.py --indexar`. A opção `--descobrir` consulta
+os vínculos no portal e não substitui as respostas já indexadas.
 
 O catálogo contém **1.035 questões de matemática**, correspondentes a 23
 cadernos oficiais do Inep de **2015 a 2025**: aplicação regular e

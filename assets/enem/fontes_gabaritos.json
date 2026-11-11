@@ -1,0 +1,140 @@
+[
+  {
+    "prova": "2015-regular",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/gabaritos/2015/CADERNO_5_AMARELO_DOMINGO.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2015",
+    "arquivo": "CADERNO_5_AMARELO_DOMINGO.pdf"
+  },
+  {
+    "prova": "2015-ppl",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/ppl/2015/GAB_ENEM2015_2aAPLICACAO_DIA2_CADERNO_13.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2015",
+    "arquivo": "GAB_ENEM2015_2aAPLICACAO_DIA2_CADERNO_13.pdf"
+  },
+  {
+    "prova": "2016-regular",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/gabaritos/2016/GAB_ENEM_2016_DIA_2_05_AMARELO.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2016",
+    "arquivo": "GAB_ENEM_2016_DIA_2_05_AMARELO.pdf"
+  },
+  {
+    "prova": "2016-segunda",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/gabaritos/2016/GAB_ENEM_2016_DIA_2_05_AMARELO_2.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2016",
+    "arquivo": "GAB_ENEM_2016_DIA_2_05_AMARELO_2.pdf"
+  },
+  {
+    "prova": "2016-ppl",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/ppl/2016/gabarito_caderno_cinza_13_2016.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2016",
+    "arquivo": "gabarito_caderno_cinza_13_2016.pdf"
+  },
+  {
+    "prova": "2017-regular",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/gabaritos/2017/cad_5_gabarito_amarelo_12112017.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2017",
+    "arquivo": "cad_5_gabarito_amarelo_12112017.pdf"
+  },
+  {
+    "prova": "2017-ppl",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/ppl/2017/gabaritos/GAB_ENEM_2017_2_APL_DIA_2_Amarelo_cad_5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2017",
+    "arquivo": "GAB_ENEM_2017_2_APL_DIA_2_Amarelo_cad_5.pdf"
+  },
+  {
+    "prova": "2018-regular",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/gabaritos/2018/GAB_ENEM_2018_DIA_2_AMARELO.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2018",
+    "arquivo": "GAB_ENEM_2018_DIA_2_AMARELO.pdf"
+  },
+  {
+    "prova": "2018-ppl",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/gabaritos/2018/GAB_ENEM_2018_DIA_2_P2_Amarelo.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2018",
+    "arquivo": "GAB_ENEM_2018_DIA_2_P2_Amarelo.pdf"
+  },
+  {
+    "prova": "2019-regular",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/gabaritos/2019/gabarito_2_dia_caderno_5_amarelo_aplicacao_regular.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2019",
+    "arquivo": "gabarito_2_dia_caderno_5_amarelo_aplicacao_regular.pdf"
+  },
+  {
+    "prova": "2019-ppl",
+    "url": "https://download.inep.gov.br/educacao_basica/enem/ppl/2019/gabaritos/gabarito_2_dia_caderno_5_amarelo_2_aplicacao.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2019",
+    "arquivo": "gabarito_2_dia_caderno_5_amarelo_2_aplicacao.pdf"
+  },
+  {
+    "prova": "2020-regular",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2020_GB_impresso_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2020",
+    "arquivo": "2020_GB_impresso_D2_CD5.pdf"
+  },
+  {
+    "prova": "2020-ppl",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2020_GB_reaplicacao_PPL_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2020",
+    "arquivo": "2020_GB_reaplicacao_PPL_D2_CD5.pdf"
+  },
+  {
+    "prova": "2021-regular",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2021_GB_impresso_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2021",
+    "arquivo": "2021_GB_impresso_D2_CD5.pdf"
+  },
+  {
+    "prova": "2021-ppl",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2021_GB_reaplicacao_PPL_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2021",
+    "arquivo": "2021_GB_reaplicacao_PPL_D2_CD5.pdf"
+  },
+  {
+    "prova": "2022-regular",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2022_GB_impresso_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2022",
+    "arquivo": "2022_GB_impresso_D2_CD5.pdf"
+  },
+  {
+    "prova": "2022-ppl",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2022_GB_reaplicacao_PPL_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2022",
+    "arquivo": "2022_GB_reaplicacao_PPL_D2_CD5.pdf"
+  },
+  {
+    "prova": "2023-regular",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2023_GB_impresso_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2023",
+    "arquivo": "2023_GB_impresso_D2_CD5.pdf"
+  },
+  {
+    "prova": "2023-ppl",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2023_GB_reaplicacao_PPL_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2023",
+    "arquivo": "2023_GB_reaplicacao_PPL_D2_CD5.pdf"
+  },
+  {
+    "prova": "2024-regular",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2024_GB_impresso_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+    "arquivo": "2024_GB_impresso_D2_CD5.pdf"
+  },
+  {
+    "prova": "2024-ppl",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2024_GB_reaplicacao_PPL_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+    "arquivo": "2024_GB_reaplicacao_PPL_D2_CD5.pdf"
+  },
+  {
+    "prova": "2025-regular",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2025_GB_impresso_D2_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+    "arquivo": "2025_GB_impresso_D2_CD5.pdf"
+  },
+  {
+    "prova": "2025-ppl",
+    "url": "https://download.inep.gov.br/enem/provas_e_gabaritos/2025_GB_impresso_D6_CD5.pdf",
+    "fonte": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+    "arquivo": "2025_GB_impresso_D6_CD5.pdf"
+  }
+]

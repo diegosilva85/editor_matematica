@@ -102,13 +102,23 @@ def carregar_acervo(pasta=DADOS):
     fontes=json.loads((ASSETS/'fontes.json').read_text(encoding='utf-8'))
     index=ASSETS/'indice.json'
     questoes=json.loads(index.read_text(encoding='utf-8'))['questoes'] if index.exists() else []
+    gabaritos_path=ASSETS/'gabaritos.json'
+    gabaritos=json.loads(gabaritos_path.read_text(encoding='utf-8'))['provas'] if gabaritos_path.exists() else {}
     ajustes=Path(pasta)/'conteudos.json'
     edits=json.loads(ajustes.read_text(encoding='utf-8')) if ajustes.exists() else {}
     for q in questoes:
+        oficial=gabaritos.get(q['prova'],{})
+        resposta=oficial.get('respostas',{}).get(str(q['numero']))
+        q['gabarito']=resposta if resposta in ('A','B','C','D','E','Anulada') else None
+        q['gabarito_url']=oficial.get('url','') if q['gabarito'] else ''
         if q['id'] in edits:
             q['conteudos']=[t for t in edits[q['id']] if t in CONTEUDOS] or [CONTEUDOS[-1]]
             q['revisado']=True
     return fontes,questoes
+
+
+def rotulo_gabarito(questao):
+    return 'Gabarito oficial: '+(questao.get('gabarito') or 'Não disponível')
 
 
 def salvar_conteudos(identificador,conteudos,pasta=DADOS):
