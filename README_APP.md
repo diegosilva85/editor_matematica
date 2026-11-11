@@ -502,3 +502,11 @@ locais: `python importar_enem.py --baixar`. Para redescobrir os links de
 
 Esta janela é um navegador do acervo; ainda não adiciona automaticamente uma
 questão do Enem a uma lista ou prova.
+# Folhas Boss do Enem
+
+No acervo, **Gerar Boss** abre a prévia de uma folha A4 com cópias da questão
+selecionada e linhas pontilhadas para recorte. O encaixe maximiza as cópias sem
+reduzir abaixo de 90% do tamanho original. Questões maiores ficam em uma única
+cópia, ajustada proporcionalmente; continuações podem ser dispostas em colunas
+para preservar a leitura. O gabarito não é impresso. **Salvar PDF** salva exatamente
+a folha da prévia e um JSON com a questão, a fonte e os parâmetros de disposição.

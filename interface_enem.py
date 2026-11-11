@@ -4,7 +4,8 @@ from math import ceil
 from queue import Queue,Empty
 from threading import Event
 import tkinter as tk
-from tkinter import ttk,messagebox
+from tkinter import ttk,messagebox,filedialog
+from pathlib import Path
 import webbrowser
 from PIL import ImageTk
 from acervo_enem import (CONTEUDOS,carregar_acervo,filtrar,imagem_questao,
@@ -125,6 +126,7 @@ class JanelaEnem(tk.Toplevel):
             ttk.Button(botoes,text=rotulo_gabarito(q),
                        state='normal' if q.get('gabarito_url') else 'disabled',
                        command=lambda q=q:webbrowser.open(q['gabarito_url'])).pack(side='left',padx=(8,0))
+            ttk.Button(botoes,text='Gerar Boss',command=lambda q=q:self.boss(q)).pack(side='right',padx=(8,0))
             label=ttk.Label(card,text='Carregando imagem…');label.pack(anchor='center');self.slots.append(label)
         def renderizar():
             for n,q in enumerate(itens):
@@ -156,6 +158,11 @@ class JanelaEnem(tk.Toplevel):
                     q,inteira,result=args
                     if isinstance(result,str):messagebox.showerror('Visualização',result,parent=self)
                     else:self.exibir_ampliada(q,result,inteira)
+                elif tipo=='boss':
+                    q,result=args
+                    self.status.set('')
+                    if isinstance(result,str):messagebox.showerror('Gerar Boss',result,parent=self)
+                    else:self.exibir_boss(q,*result)
         except Empty:pass
         self._consulta=self.after(80,self.consultar)
 
@@ -204,6 +211,44 @@ class JanelaEnem(tk.Toplevel):
             except (ValueError,OSError) as exc:messagebox.showerror('Conteúdos',str(exc),parent=win);return
             self.fontes,self.questoes=carregar_acervo();win.destroy();self.aplicar()
         ttk.Button(win,text='Salvar classificação',command=salvar).pack(pady=12)
+
+    def boss(self,q):
+        self.status.set('Preparando folha Boss…')
+        def tarefa():
+            from boss_enem import gerar_boss
+            try:result=gerar_boss(q,self.provas[q['prova']])
+            except Exception as exc:result=str(exc)
+            self.fila.put(('boss',q,result))
+        self.executor.submit(tarefa)
+
+    def exibir_boss(self,q,dados,preview,plano):
+        win=tk.Toplevel(self);win.title(f"Gerar Boss — questão {q['numero']}");win.geometry('850x900')
+        topo=ttk.Frame(win,padding=10);topo.pack(fill='x')
+        texto=f"{plano['quantidade']} cópia(s) em uma folha A4 • tamanho: {plano['escala']:.0%} do original"
+        ttk.Label(topo,text=texto).pack(side='left')
+        def salvar():
+            destino=filedialog.asksaveasfilename(parent=win,title='Salvar folha Boss',defaultextension='.pdf',
+                filetypes=[('PDF','*.pdf')],initialfile=f"boss_{q['id']}.pdf")
+            if not destino:return
+            from acervo_enem import salvar_json
+            try:
+                Path(destino).write_bytes(dados)
+                salvar_json(Path(destino).with_suffix('.json'),dict(tipo='boss_enem',versao=1,
+                    questao=q,prova=self.provas[q['prova']],layout=plano))
+            except OSError as exc:messagebox.showerror('Salvar Boss',str(exc),parent=win);return
+            messagebox.showinfo('Boss','PDF e JSON salvos.',parent=win)
+        ttk.Button(topo,text='Salvar PDF',command=salvar).pack(side='right')
+        area=tk.Canvas(win,background='#dddddd');scroll=ttk.Scrollbar(win,command=area.yview)
+        horizontal=ttk.Scrollbar(win,orient='horizontal',command=area.xview)
+        horizontal.pack(side='bottom',fill='x')
+        scroll.pack(side='right',fill='y');area.pack(fill='both',expand=True)
+        area.configure(yscrollcommand=scroll.set,xscrollcommand=horizontal.set)
+        area._photo=ImageTk.PhotoImage(preview)
+        area.create_image(10,10,image=area._photo,anchor='nw')
+        area.configure(scrollregion=(0,0,preview.width+20,preview.height+20))
+        area.bind('<Button-4>',lambda e:area.yview_scroll(-3,'units'))
+        area.bind('<Button-5>',lambda e:area.yview_scroll(3,'units'))
+        area.bind('<MouseWheel>',lambda e:area.yview_scroll(-int(e.delta/120),'units'))
 
     def fechar(self):
         self.cancelar.set();self.geracao+=1
