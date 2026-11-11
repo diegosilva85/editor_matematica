@@ -6,6 +6,7 @@ __pycache__/
 .agents/
 tmp/
 output/
+/acervo_enem/
 /*.pdf
 /*.json
 .env

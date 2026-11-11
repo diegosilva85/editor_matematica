@@ -771,6 +771,8 @@ def iniciar():
     editores=ttk.Frame(root);editores.pack(anchor='w',padx=14,pady=(0,8))
     ttk.Button(editores,text='Criar Lista',command=lambda:EditorLista(root)).pack(side='left')
     ttk.Button(editores,text='Criar nova prova',command=lambda:EditorProva(root)).pack(side='left',padx=8)
+    from interface_enem import JanelaEnem
+    ttk.Button(editores,text='Questões do Enem',command=lambda:JanelaEnem(root)).pack(side='left')
     notebook=ttk.Notebook(root); notebook.pack(fill='both',expand=True,padx=12)
     from interface_estatistica import AbaEstatistica
     from interface_plana import AbaPlana

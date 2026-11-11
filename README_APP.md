@@ -454,3 +454,40 @@ A média de uma contagem pode ser fracionária. Decimais com vírgula e fraçõe
 aceitos e preservados nas células editadas. Tabelas com mais de cinco colunas
 ocupam uma questão por linha no PDF e na lista, para manter a legibilidade.
 JSONs antigos com duas colunas continuam funcionando.
+# Questões do Enem
+
+O botão **Questões do Enem**, ao lado de **Criar nova prova**, abre uma janela
+maximizada com filtros por ano, prova/aplicação, conteúdo e busca no texto ou
+número da questão. À direita são exibidas quatro questões por página de
+consulta, com rolagem, navegação, ampliação e acesso à página original.
+
+O catálogo contém **1.035 questões de matemática**, correspondentes a 23
+cadernos oficiais do Inep de **2015 a 2025**: aplicação regular e
+reaplicação/PPL, além da 2ª aplicação de 2016, que é distinta da PPL.
+Não se repetem cadernos apenas por mudança de cor. A aplicação digital e a
+aplicação regional de 2025 não integram este recorte. A edição 2026 ainda não
+está incluída. O texto e as figuras permanecem como nos originais; os recortes
+consideram páginas de uma/duas colunas e continuações. O caderno baixado é o
+original completo do dia, mas a janela indexa somente matemática (136–180).
+
+**Os conteúdos são sugestões automáticas, não classificações do Inep.** Uma
+questão pode aparecer em mais de um conteúdo. Use **Editar conteúdos** para
+revisar; as correções ficam em `acervo_enem/conteudos.json`. Questões sem
+indícios suficientes ficam em **Matemática básica / a revisar**. As etiquetas
+não substituem a leitura da questão.
+Alguns PDFs antigos têm texto parcialmente codificado. Nesses casos, a janela
+avisa que a busca e as sugestões podem ser incompletas e sinaliza o item para
+revisão; a imagem original permanece legível. Não é realizado OCR nesta versão.
+
+Os PDFs ficam em `acervo_enem/pdfs/` (aproximadamente 114 MB), fora do Git.
+Após baixados, a consulta funciona offline. Em outro computador, clique em
+**Baixar PDFs das provas filtradas**, sem filtros para obter o acervo completo.
+O download verifica o domínio, o formato e o SHA-256, preservando arquivos
+existentes em caso de falha. Falhas de conexão/certificado são informadas;
+a verificação TLS não é desativada pelo aplicativo. Os links oficiais e o
+índice estão versionados em `assets/enem/`. Para refazer o índice com os PDFs
+locais: `python importar_enem.py --baixar`. Para redescobrir os links de
+2015–2025: `python importar_enem.py --descobrir`.
+
+Esta janela é um navegador do acervo; ainda não adiciona automaticamente uma
+questão do Enem a uma lista ou prova.
